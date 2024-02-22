@@ -3,6 +3,9 @@ using System.Linq;
 
 // Credit:
 // https://www.youtube.com/watch?v=aR6wt5BlE-E&t=946s
+//
+// Sequence node update:
+// https://softwareengineering.stackexchange.com/questions/306214/why-do-we-have-the-running-state-in-behavior-trees
 namespace com.vincentcodes.ai.behaviortree{
 
 public enum NodeState{
@@ -69,7 +72,7 @@ public class BehaviorTree<T>{
     }
 
     // update the tree so that states within the tree can be updated
-    public void tick(){
+    public void evaluate(){
         root.evaluate();
     }
 
@@ -80,7 +83,7 @@ public class BehaviorTree<T>{
     }
 }
 
-// AND Logic
+// AND Logic (ordering is important. If RUNNING is encountered first, RUNNING is returned)
 public class SequenceNode<T>: BehaviorTreeNode<T>{
     public SequenceNode(): base(){
     }
@@ -90,23 +93,21 @@ public class SequenceNode<T>: BehaviorTreeNode<T>{
     }
 
     public override NodeState evaluate(){
-        bool isAnyChildRunning = false;
         foreach(BehaviorTreeNode<T> child in children){
             switch(child.evaluate()){
                 case NodeState.FAILURE:
                     return state = NodeState.FAILURE;
                 case NodeState.RUNNING:
-                    isAnyChildRunning = true;
-                    continue;
+                    return state = NodeState.RUNNING;
                 case NodeState.SUCCESS:
                     continue;
             }
         }
-        return isAnyChildRunning? NodeState.RUNNING : NodeState.SUCCESS;
+        return NodeState.SUCCESS;
     }
 }
 
-// OR Logic (ordering is important)
+// OR Logic (ordering is important -> first success / running is the result state)
 public class SelectorNode<T>: BehaviorTreeNode<T>{
     public SelectorNode(): base(){
     }

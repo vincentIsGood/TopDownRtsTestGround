@@ -4,9 +4,6 @@ using UnityEngine;
 
 [Serializable]
 public class FormationSolver{
-    private float separation = 2f;
-    private float cohesion = 1;
-
     private Squad ownSquad;
     private Dictionary<Soldier, Vector3> soldierSquadLocalPos = new Dictionary<Soldier, Vector3>();
 
@@ -50,7 +47,7 @@ public class FormationSolver{
 
         // cohesion
         Vector3 cohesionForce = squadCenter - member.transform.position;
-        return separation * separationForce.normalized + cohesion * cohesionForce.normalized;
+        return ownSquad.config.separation * separationForce.normalized + ownSquad.config.cohesion * cohesionForce.normalized;
     }
 
     public static Vector3 center(Vector3[] vects){

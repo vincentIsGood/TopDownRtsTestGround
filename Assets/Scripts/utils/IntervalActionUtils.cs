@@ -3,18 +3,18 @@ using UnityEngine;
 
 public delegate void VoidAction();
 
-public class IntervalUtils{
+public class IntervalActionUtils{
     private VoidAction action;
     private float intervalSec;
 
     private float startTimeSec = -1;
-    private bool started = false;
+    private bool started = true;
 
-    public IntervalUtils(VoidAction action, float intervalSec){
+    public IntervalActionUtils(VoidAction action, float intervalSec){
         this.action = action;
         this.intervalSec = intervalSec;
     }
-    public IntervalUtils(VoidAction action, float intervalSec, bool started){
+    public IntervalActionUtils(VoidAction action, float intervalSec, bool started){
         this.action = action;
         this.intervalSec = intervalSec;
         this.started = started;

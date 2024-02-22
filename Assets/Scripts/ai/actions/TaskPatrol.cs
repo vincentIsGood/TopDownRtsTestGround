@@ -7,7 +7,7 @@ public class TaskPatrol: BehaviorTreeNode<SquadBTData>{
     private float waitTimeConfig = 3;
 
     private int waypointIndex = 0;
-    private float timeWaited = 0;
+    private float timeStartedWaiting = 0;
 
     public TaskPatrol(Transform[] waypoints){
         this.waypoints = waypoints;
@@ -15,11 +15,10 @@ public class TaskPatrol: BehaviorTreeNode<SquadBTData>{
 
     public override NodeState evaluate(){
         if(!tree.sharedData.squad.isMoving()){
-            timeWaited += Time.deltaTime;
-            if(timeWaited < waitTimeConfig) 
+            if(Time.time - timeStartedWaiting < waitTimeConfig) 
                 return NodeState.RUNNING;
             
-            timeWaited = 0;
+            timeStartedWaiting = Time.time;
             moveToNextWaypoint();
         }
         return NodeState.RUNNING;

@@ -9,18 +9,16 @@ public class GuardsBehaviorTree : MonoBehaviour{
 
     private Squad squad;
     private BehaviorTree<SquadBTData> behaviorTree;
+    private IntervalActionUtils updateTreeUpdater;
 
     void Start(){
         squad = GetComponent<Squad>();
         behaviorTree = buildTree();
+        updateTreeUpdater = new IntervalActionUtils(behaviorTree.evaluate, .01f);
     }
 
     void Update(){
-        InvokeRepeating("updateTree", 0, .5f);
-    }
-
-    void updateTree(){
-        behaviorTree.tick();
+        updateTreeUpdater.tick();
     }
 
     public BehaviorTree<SquadBTData> buildTree(){

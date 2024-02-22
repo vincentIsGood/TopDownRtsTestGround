@@ -19,6 +19,7 @@ public class Squad: MonoBehaviour{
     private Transform targetPos;
 
     private Cover cover;
+    private Squad enemySquad;
     private bool inCombat = false;
 
     void Start(){
@@ -42,9 +43,19 @@ public class Squad: MonoBehaviour{
         if(!EditorApplication.isPlaying) return;
         Handles.color = Color.black;
         Handles.DrawWireDisc(targetPos.position, Vector3.forward, spawnRadius);
+        Handles.DrawWireDisc(center, Vector3.forward, 0.1f);
         Handles.color = Color.yellow;
         foreach(Soldier member in members)
             Handles.DrawWireDisc(member.headingToPos, Vector3.forward, 0.2f);
+
+        Handles.color = Color.green;
+        foreach(Soldier enemy in targetSolver.targetedEnemies)
+            Handles.DrawWireDisc(enemy.transform.position, Vector3.forward, 0.2f);
+    }
+
+    [ContextMenu("Print targeted enemies")]
+    public void printEnemies(){
+        Debug.Log(targetSolver.targetedEnemies.Count);
     }
 #endif
 
@@ -58,6 +69,7 @@ public class Squad: MonoBehaviour{
     public void moveToPos(Vector3 pos){
         targetPos.position = pos;
         targetSolver.clearSquadTargets();
+        enemySquad = null;
 
         if(this.cover){
             leaveCover();
@@ -73,6 +85,7 @@ public class Squad: MonoBehaviour{
     public void moveToPos(Vector3 pos, Cover cover){
         targetPos.position = pos;
         targetSolver.clearSquadTargets();
+        enemySquad = null;
 
         if(this.cover) leaveCover();
         this.cover = cover;
@@ -86,11 +99,19 @@ public class Squad: MonoBehaviour{
     public void moveToPos(Vector3 pos, Squad squad){
         if(this == squad) return;
         targetPos.position = pos;
-        targetSolver.clearSquadTargets();
+        enemySquad = squad;
 
         formation.updateMembersLocalPos();
         foreach(Soldier member in members){
             member.attackAndMove(targetSolver.assignTargetFrom(squad, member));
+        }
+    }
+    public void fireTowards(Squad squad){
+        if(this == squad || enemySquad != null) return;
+
+        formation.updateMembersLocalPos();
+        foreach(Soldier member in members){
+            member.attackOnSight(targetSolver.assignTargetFrom(squad, member, false));
         }
     }
     

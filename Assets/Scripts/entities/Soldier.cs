@@ -8,31 +8,31 @@ public class Soldier: MonoBehaviour{
     public Vector3 headingToPos;
 
     // do not clear target yourself
-    public Soldier target = null;
+    [NonSerialized] public Soldier target = null;
     private bool chaseTarget = false;
-    private IntervalUtils shooter;
+    private IntervalActionUtils shootUpdater;
 
-    public Squad ownSquad;
+    [NonSerialized] public Squad ownSquad;
 
     void Start(){
         agent = GetComponent<AiNavigator>();
         ownSquad = GetComponentInParent<Squad>();
-        shooter = new IntervalUtils(shoot, ownSquad.config.attackSpeedSec, true);
+        shootUpdater = new IntervalActionUtils(shoot, ownSquad.config.attackSpeedSec);
     }
     void Update(){
         if(target){
             if(chaseTarget){
                 agent.moveTo(target.transform);
             }
-            RaycastHit2D hit = TargetSolver.canSeeTargetDetailed(this, target);
+            RaycastHit2D hit = GameVisionUtils.canSeeTargetDetailed(this, target);
             if(hit.collider != null && hit.distance < ownSquad.config.attackRange){
-                shooter.tick();
+                shootUpdater.tick();
             }
         }
     }
     void OnDrawGizmos(){
         if(!target) return;
-        RaycastHit2D hit = TargetSolver.canSeeTargetDetailed(this, target);
+        RaycastHit2D hit = GameVisionUtils.canSeeTargetDetailed(this, target);
         if(hit.collider != null){
             if(hit.distance < ownSquad.config.attackRange){
                 Handles.color = Color.blue;
@@ -56,6 +56,8 @@ public class Soldier: MonoBehaviour{
 
     public void attackAndMove(Soldier target){
         this.target = target;
+        
+        if(target == null) return;
         chaseTarget = true;
         stopAtFireDistance();
     }
