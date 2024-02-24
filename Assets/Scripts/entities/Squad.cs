@@ -18,7 +18,7 @@ public class Squad: MonoBehaviour{
     private TargetPosIndicator targetPosIndicator;
     private Transform targetPos;
 
-    private Cover cover;
+    private CoverSide cover;
     private Squad enemySquad;
     private bool inCombat = false;
 
@@ -29,7 +29,7 @@ public class Squad: MonoBehaviour{
         targetPosIndicator = GetComponentInChildren<TargetPosIndicator>();
         targetPos = targetPosIndicator.transform;
 
-        config.init(this);
+        config.assign(this);
         initMembers();
     }
 
@@ -52,11 +52,7 @@ public class Squad: MonoBehaviour{
         foreach(Soldier enemy in targetSolver.targetedEnemies)
             Handles.DrawWireDisc(enemy.transform.position, Vector3.forward, 0.2f);
     }
-
-    [ContextMenu("Print targeted enemies")]
-    public void printEnemies(){
-        Debug.Log(targetSolver.targetedEnemies.Count);
-    }
+    
 #endif
 
     private void initMembers(){
@@ -88,12 +84,12 @@ public class Squad: MonoBehaviour{
         enemySquad = null;
 
         if(this.cover) leaveCover();
-        this.cover = cover;
+        this.cover = cover.findClosestSide(this);
 
         formation.updateMembersLocalPos();
         foreach(Soldier member in members){
             member.moveCloseToPos();
-            member.moveToPos(formation.getFormationPos(member, cover, pos));
+            member.moveToPos(formation.getFormationPos(member, this.cover, pos));
         }
     }
     public void moveToPos(Vector3 pos, Squad squad){

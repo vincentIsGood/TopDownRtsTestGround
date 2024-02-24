@@ -53,9 +53,14 @@ MonoBehaviour:
     wallMask:
       serializedVersion: 2
       m_Bits: 1024
+    coverMask:
+      serializedVersion: 2
+      m_Bits: 512
     findRange: 3
     chaseRange: 3
     attackRange: 8
+    attackSpeedSec: 1.5
+    targetMode: 0
 --- !u!1 &6407672186637116960
 GameObject:
   m_ObjectHideFlags: 0

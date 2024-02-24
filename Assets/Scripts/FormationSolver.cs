@@ -24,6 +24,13 @@ public class FormationSolver{
         }
         return coverPos + getNoFormationPos(member);
     }
+    public Vector3 getFormationPos(Soldier member, CoverSide cover, Vector3 coverPos = new Vector3()){
+        Transform spot = cover.assignClosestSpot(member);
+        if(spot != null){
+            return spot.position;
+        }
+        return coverPos + getNoFormationPos(member);
+    }
     
     public void updateMembersLocalPos(){
         foreach(Soldier member in ownSquad.getSoldiers()){

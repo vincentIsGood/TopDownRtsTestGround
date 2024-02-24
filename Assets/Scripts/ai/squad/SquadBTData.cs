@@ -7,10 +7,11 @@ public class SquadBTData{
     [Header("Masks")]
     public LayerMask enemyMask;
     public LayerMask wallMask;
+    public LayerMask coverMask;
 
     [Header("Ranges")]
     public float findRange = 2;
-    public float chaseRange = 2;
+    public float chaseRange = 4;
     public float attackRange = 4;
 
     [Header("Cooldowns")]
@@ -27,7 +28,7 @@ public class SquadBTData{
     [NonSerialized] public Squad squad;
     [NonSerialized] public Squad target;
 
-    public void init(Squad squad){
+    public void assign(Squad squad){
         this.squad = squad;
     }
 }

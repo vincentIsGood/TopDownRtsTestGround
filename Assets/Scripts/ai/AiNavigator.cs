@@ -20,10 +20,9 @@ public class AiNavigator : MonoBehaviour{
     }
 
     void Update(){
-        if(target){
+        if(target)
             agent.SetDestination(target.position);
-            faceTarget();
-        }
+        if(isMoving()) faceTarget();
     }
 
     public void moveTo(Transform target){
@@ -53,16 +52,14 @@ public class AiNavigator : MonoBehaviour{
         return Vector3.Distance(transform.position, target.position) < agent.stoppingDistance;
     }
 
-    // pointing up is the forward vector in our 2D game
-    public float getForwardAngle(){
-        float angle = Vector3.Angle(agent.velocity.normalized, Vector3.up);
-        if (agent.velocity.normalized.z < 0){
-            return 360 - angle;
-        }
-        return angle;
+
+    public void faceTarget(){
+        if(agent.velocity.magnitude > 0.1f)
+            transform.rotation = Quaternion.AngleAxis(findAngle(agent.velocity.normalized), Vector3.forward);
     }
 
-    private void faceTarget(){
-        transform.rotation = Quaternion.AngleAxis(getForwardAngle(), Vector3.forward);
+    // No rotation along xyz == forward (ideally point upward + no rotation == point forward)
+    public static float findAngle(Vector3 direction){
+        return Quaternion.FromToRotation(Vector3.up, direction).eulerAngles.z;
     }
 }

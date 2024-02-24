@@ -4,15 +4,15 @@ using UnityEditor;
 using UnityEngine;
 
 public class Soldier: MonoBehaviour{
+    public EntityStat stat = new EntityStat();
     [NonSerialized] public AiNavigator agent;
-    public Vector3 headingToPos;
+    [NonSerialized] public Squad ownSquad;
 
-    // do not clear target yourself
     [NonSerialized] public Soldier target = null;
+    [NonSerialized] public Vector3 headingToPos;
+
     private bool chaseTarget = false;
     private IntervalActionUtils shootUpdater;
-
-    [NonSerialized] public Squad ownSquad;
 
     void Start(){
         agent = GetComponent<AiNavigator>();
@@ -30,6 +30,7 @@ public class Soldier: MonoBehaviour{
             }
         }
     }
+#if UNITY_EDITOR
     void OnDrawGizmos(){
         if(!target) return;
         RaycastHit2D hit = GameVisionUtils.canSeeTargetDetailed(this, target);
@@ -38,10 +39,12 @@ public class Soldier: MonoBehaviour{
                 Handles.color = Color.blue;
             }else Handles.color = Color.black;
         }else Handles.color = Color.red;
-        Handles.DrawLine(this.transform.position, target.transform.position);
+        Handles.DrawLine(transform.position, target.transform.position);
     }
+#endif
+
     private void shoot(){
-        Debug.Log("Shooting");
+        WeaponSuite.bulletForward(this, (target.transform.position - transform.position).normalized);
     }
 
     public void moveToPos(Vector3 pos){

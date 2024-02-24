@@ -9,24 +9,32 @@ public class GuardsBehaviorTree : MonoBehaviour{
 
     private Squad squad;
     private BehaviorTree<SquadBTData> behaviorTree;
-    private IntervalActionUtils updateTreeUpdater;
+    private IntervalActionUtils treeUpdater;
 
     void Start(){
         squad = GetComponent<Squad>();
         behaviorTree = buildTree();
-        updateTreeUpdater = new IntervalActionUtils(behaviorTree.evaluate, .01f);
+        treeUpdater = new IntervalActionUtils(behaviorTree.evaluate, .01f);
     }
 
     void Update(){
-        updateTreeUpdater.tick();
+        treeUpdater.tick();
     }
 
     public BehaviorTree<SquadBTData> buildTree(){
         BehaviorTree<SquadBTData> tree = new BehaviorTree<SquadBTData>(squad.config);
         tree.setRoot(new SelectorNode<SquadBTData>(
             tree.init(new SequenceNode<SquadBTData>(
-                tree.init(new CheckEnemyInPursueRange()),
-                tree.init(new TaskPursueEnemy())
+                tree.init(new CheckEnemyIsAttackable()),
+                tree.init(new SelectorNode<SquadBTData>(
+                    tree.init(new SequenceNode<SquadBTData>(
+                        // TODO: still doesn't find cover. HELP
+                        tree.init(new DebugBeep()),
+                        tree.init(new TaskFindCover()),
+                        tree.init(new TaskFireTowardsEnemy())
+                    )),
+                    tree.init(new TaskFireTowardsEnemy())
+                ))
             )),
             tree.init(new TaskPatrol(waypoints))
         ));
