@@ -28,8 +28,6 @@ public class GuardsBehaviorTree : MonoBehaviour{
                 tree.init(new CheckEnemyIsAttackable()),
                 tree.init(new SelectorNode<SquadBTData>(
                     tree.init(new SequenceNode<SquadBTData>(
-                        // TODO: still doesn't find cover. HELP
-                        tree.init(new DebugBeep()),
                         tree.init(new TaskFindCover()),
                         tree.init(new TaskFireTowardsEnemy())
                     )),

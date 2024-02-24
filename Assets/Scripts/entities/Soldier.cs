@@ -27,6 +27,8 @@ public class Soldier: MonoBehaviour{
             RaycastHit2D hit = GameVisionUtils.canSeeTargetDetailed(this, target);
             if(hit.collider != null && hit.distance < ownSquad.config.attackRange){
                 shootUpdater.tick();
+            }else{
+                target = null;
             }
         }
     }
