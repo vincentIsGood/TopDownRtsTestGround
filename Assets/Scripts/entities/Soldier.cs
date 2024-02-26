@@ -35,7 +35,7 @@ public class Soldier: MonoBehaviour{
             if(chaseTarget){
                 agent.moveTo(target.transform);
             }
-            RaycastHit2D hit = GameVisionUtils.canSeeTargetDetailed(this, target);
+            GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit);
             if(hit.collider != null && hit.distance < ownSquad.config.attackRange){
                 shootUpdater.tick();
             }else{
@@ -46,7 +46,7 @@ public class Soldier: MonoBehaviour{
 #if UNITY_EDITOR
     void OnDrawGizmos(){
         if(!target) return;
-        RaycastHit2D hit = GameVisionUtils.canSeeTargetDetailed(this, target);
+        GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit);
         if(hit.collider != null){
             if(hit.distance < ownSquad.config.attackRange){
                 Handles.color = Color.blue;

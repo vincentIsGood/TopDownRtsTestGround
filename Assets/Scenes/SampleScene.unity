@@ -2126,6 +2126,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 2651960051680221942, guid: a479f874ee1ade949a98986f44e74bd5, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 4611695967585353617, guid: a479f874ee1ade949a98986f44e74bd5, type: 3}
       propertyPath: wallMask.m_Bits
       value: 1024

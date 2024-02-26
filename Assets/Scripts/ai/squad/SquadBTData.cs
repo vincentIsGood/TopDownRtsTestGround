@@ -18,8 +18,8 @@ public class SquadBTData{
     public float attackSpeedSec = 1.5f;
 
     [Header("Formations")]
-    [NonSerialized] public float separation = 2f;
-    [NonSerialized] public float cohesion = 1;
+    public float separation = 2f;
+    public float cohesion = 1.3f;
 
     [Header("Target Solver")]
     public TargetMode targetMode = TargetMode.Closest;
