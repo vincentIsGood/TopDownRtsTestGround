@@ -44,7 +44,7 @@ public class AiNavigator : MonoBehaviour{
     }
 
     public bool isMoving(){
-        return agent.velocity.magnitude > 0;
+        return agent.velocity.magnitude > 0.005f;
     }
 
     public bool isWithinStoppingDistance(){

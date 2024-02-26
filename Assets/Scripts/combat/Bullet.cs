@@ -19,12 +19,11 @@ public class Bullet: MonoBehaviour{
 
     void OnTriggerEnter2D(Collider2D collider){
         Soldier soldier;
-        if(collider.TryGetComponent(out soldier)){
-            int layerMask = owner.ownSquad.config.enemyMask | owner.ownSquad.config.wallMask;
-            if((1 << collider.gameObject.layer & layerMask) > 0){
+        int layerMask = owner.ownSquad.config.enemyMask | owner.ownSquad.config.wallMask;
+        if((1 << collider.gameObject.layer & layerMask) > 0){
+            if(collider.TryGetComponent(out soldier))
                 owner.combatManager.attack(soldier);
-                Destroy(this.gameObject);
-            }
+            Destroy(this.gameObject);
         }
     }
 }

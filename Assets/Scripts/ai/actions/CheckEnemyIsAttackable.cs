@@ -11,11 +11,10 @@ public class CheckEnemyIsAttackable: BehaviorTreeNode<SquadBTData>{
         int hitCount = Physics2D.OverlapCircleNonAlloc(
             sharedData.squad.center, sharedData.attackRange, colliders, sharedData.enemyMask);
         for(int i = 0; i < hitCount; i++){
-            if(colliders[i].transform.TryGetComponent<Soldier>(out soldier)){
-                if(!GameVisionUtils.canSeeTarget(sharedData.squad, soldier.ownSquad)) continue;
-                sharedData.target = soldier.ownSquad;
-                return state = NodeState.SUCCESS;
-            }
+            if(!colliders[i].transform.TryGetComponent<Soldier>(out soldier)) continue;
+            if(!GameVisionUtils.canSeeTarget(sharedData.squad, soldier)) continue;
+            sharedData.target = soldier.ownSquad;
+            return state = NodeState.SUCCESS;
         }
         return state = NodeState.FAILURE;
     }
