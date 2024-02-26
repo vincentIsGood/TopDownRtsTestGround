@@ -48,8 +48,8 @@ public class FormationSolver{
                 separationForce += diff.normalized / dist;
             }
         }
-        if(ownSquad.getSoldiers().Length-1 > 0){
-            separationForce /= ownSquad.getSoldiers().Length-1;
+        if(ownSquad.getSoldiers().Count-1 > 0){
+            separationForce /= ownSquad.getSoldiers().Count-1;
         }
 
         // cohesion

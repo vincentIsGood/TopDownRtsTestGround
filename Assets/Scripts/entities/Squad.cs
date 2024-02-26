@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class Squad: MonoBehaviour{
     [NonSerialized] public Vector3 center;
     [NonSerialized] public bool aiControl;
 
-    private Soldier[] members;
+    private List<Soldier> members;
     private TargetPosIndicator targetPosIndicator;
     private Transform targetPos;
 
@@ -25,12 +26,18 @@ public class Squad: MonoBehaviour{
     void Start(){
         formation = new FormationSolver(this);
         targetSolver = new TargetSolver(this);
-        members = GetComponentsInChildren<Soldier>();
+        members = GetComponentsInChildren<Soldier>().ToList();
         targetPosIndicator = GetComponentInChildren<TargetPosIndicator>();
         targetPos = targetPosIndicator.transform;
 
         config.assign(this);
         initMembers();
+    }
+    private void initMembers(){
+        foreach(Soldier member in members){
+            member.transform.position = targetPos.position + RandomUtils.randomWithNeg(0.1f, 0.1f, 0);
+        }
+        formation.updateMembersLocalPos();
     }
 
     void Update(){
@@ -52,14 +59,22 @@ public class Squad: MonoBehaviour{
         foreach(Soldier enemy in targetSolver.targetedEnemies)
             Handles.DrawWireDisc(enemy.transform.position, Vector3.forward, 0.2f);
     }
-    
 #endif
 
-    private void initMembers(){
-        foreach(Soldier member in members){
-            member.transform.position = targetPos.position + RandomUtils.randomWithNeg(0.1f, 0.1f, 0);
-        }
+    public void onMemberDie(Soldier member){
+        cover?.leaveSpot(member);
+        targetSolver.clearTargetFor(member);
+
+        members.Remove(member);
         formation.updateMembersLocalPos();
+
+        if(members.Count == 0){
+            Destroy(this.gameObject);
+        }
+    }
+    public void onEnemyKilled(Soldier attacker, Soldier enemy){
+        targetSolver.clearTargetFor(attacker);
+        fireTowards(enemy.ownSquad);
     }
 
     public void moveToPos(Vector3 pos){
@@ -104,6 +119,7 @@ public class Squad: MonoBehaviour{
     }
     public void fireTowards(Squad squad){
         if(this == squad || enemySquad != null) return;
+        if(squad.getSoldiers().Count == 0) return;
 
         formation.updateMembersLocalPos();
         foreach(Soldier member in members){
@@ -122,11 +138,11 @@ public class Squad: MonoBehaviour{
         foreach(Soldier member in members){
             result += member.transform.position;
         }
-        return result / members.Length;
+        return result / members.Count;
     }
 
     // Getter & Setters
-    public Soldier[] getSoldiers(){
+    public List<Soldier> getSoldiers(){
         return members;
     }
     public bool isMoving(){

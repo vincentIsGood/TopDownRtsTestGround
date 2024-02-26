@@ -3,8 +3,16 @@ using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
+/*
+Soldier +
+        |- HpBar
+        |- Soldier
+*/
 public class Soldier: MonoBehaviour{
+    public HpBar hpBar;
+
     public EntityStat stat = new EntityStat();
+    public CombatManager combatManager;
     [NonSerialized] public AiNavigator agent;
     [NonSerialized] public Squad ownSquad;
 
@@ -15,8 +23,11 @@ public class Soldier: MonoBehaviour{
     private IntervalActionUtils shootUpdater;
 
     void Start(){
+        combatManager = new CombatManager(this);
+
         agent = GetComponent<AiNavigator>();
         ownSquad = GetComponentInParent<Squad>();
+        stat.setHpBar(hpBar);
         shootUpdater = new IntervalActionUtils(shoot, ownSquad.config.attackSpeedSec);
     }
     void Update(){
@@ -44,6 +55,14 @@ public class Soldier: MonoBehaviour{
         Handles.DrawLine(transform.position, target.transform.position);
     }
 #endif
+
+    public void onDie(){
+        ownSquad.onMemberDie(this);
+        Destroy(this.transform.parent.gameObject);
+    }
+    public void onEnemyKilled(Soldier enemy){
+        ownSquad.onEnemyKilled(this, enemy);
+    }
 
     private void shoot(){
         WeaponSuite.bulletForward(this, (target.transform.position - transform.position).normalized);

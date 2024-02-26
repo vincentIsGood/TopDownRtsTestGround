@@ -9,6 +9,7 @@ public class RtsController: MonoBehaviour{
     void Update(){
         if(Input.GetMouseButtonDown(1)){
             Vector3 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            targetPos.z = 0;
             int hitCount = Physics2D.RaycastNonAlloc(targetPos, Vector2.zero, hitInfos);
             if(hitCount > 0){
                 if(hitInfos[0].collider.TryGetComponent(out Cover cover)){

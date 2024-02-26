@@ -49,6 +49,12 @@ public class CoverSide: MonoBehaviour{
         occupiedCount = Math.Max(occupiedCount - 1, 0);
     }
 
+    public void clearSpot(){
+        foreach(Soldier soldier in occupiedSpots){
+            if(!soldier) leaveSpot(soldier);
+        }
+    }
+
     public bool isAnySpotAvailable(){
         return occupiedCount < coverSpots.Count;
     }

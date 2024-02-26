@@ -13,12 +13,12 @@ public class TargetSolver{
 
     // remember to clearTarget() from "member"
     public Soldier assignTargetFrom(Squad enemySquad, Soldier member, bool allowOverride = true){
-        Soldier[] enemies = enemySquad.getSoldiers();
-        if(enemies.Length == 0) return null;
+        List<Soldier> enemies = enemySquad.getSoldiers();
+        if(enemies.Count == 0) return null;
         
         if(member.target != null){
             if(!allowOverride) return member.target;
-            else clearTarget(member);
+            else clearTargetFor(member);
         }
 
         Soldier target = null;
@@ -38,7 +38,7 @@ public class TargetSolver{
         return target;
     }
 
-    public void clearTarget(Soldier member){
+    public void clearTargetFor(Soldier member){
         if(!member.target) return;
         targetedEnemies.Remove(member.target);
         member.target = null;
@@ -46,7 +46,7 @@ public class TargetSolver{
     public void clearSquadTargets(){
         if(targetedEnemies.Count == 0) return;
         foreach(Soldier member in ownSquad.getSoldiers()){
-            clearTarget(member);
+            clearTargetFor(member);
         }
     }
 
@@ -54,7 +54,7 @@ public class TargetSolver{
         this.ownSquad.config.targetMode = mode;
     }
 
-    private Soldier findClosestEnemy(Soldier[] enemies, Soldier member){
+    private Soldier findClosestEnemy(List<Soldier> enemies, Soldier member){
         Soldier target = null;
         float closestDist = float.MaxValue;
         foreach(Soldier soldier in enemies){
@@ -66,7 +66,7 @@ public class TargetSolver{
         }
         return target;
     }
-    private Soldier findEnemyDistributed(Soldier[] enemies, Soldier member){
+    private Soldier findEnemyDistributed(List<Soldier> enemies, Soldier member){
         Soldier target = null;
         foreach(Soldier soldier in enemies){
             // TODO: use probability?
