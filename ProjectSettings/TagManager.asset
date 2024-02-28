@@ -49,3 +49,6 @@ TagManager:
   - name: Units
     uniqueID: 4091701231
     locked: 0
+  - name: Selection
+    uniqueID: 3449617367
+    locked: 0
