@@ -1,16 +1,15 @@
 using UnityEngine;
 
 public class Bullet: MonoBehaviour{
-    public float speed = 2;
-    public Soldier owner;
+    public float speed = 10;
+    public GameUnit owner;
     public Vector3 forward;
-
+    
     private Rigidbody2D rb;
-    private IntervalActionUtils deleteCounter;
 
     void Start(){
         rb = GetComponent<Rigidbody2D>();
-        deleteCounter = new IntervalActionUtils(()=>Destroy(this.gameObject), 60);
+        Destroy(this.gameObject, 60);
     }
 
     void Update(){
@@ -18,11 +17,11 @@ public class Bullet: MonoBehaviour{
     }
 
     void OnTriggerEnter2D(Collider2D collider){
-        Soldier soldier;
-        int layerMask = owner.ownSquad.config.enemyMask | owner.ownSquad.config.wallMask;
+        GameUnit unit;
+        int layerMask = owner.getOwnSquad().config.enemyMask | owner.getOwnSquad().config.wallMask;
         if((1 << collider.gameObject.layer & layerMask) > 0){
-            if(collider.TryGetComponent(out soldier))
-                owner.combatManager.attack(soldier);
+            if(collider.TryGetComponent(out unit))
+                owner.getCombatManager().attack(unit);
             Destroy(this.gameObject);
         }
     }

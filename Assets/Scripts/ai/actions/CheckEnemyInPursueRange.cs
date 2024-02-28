@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class CheckEnemyInPursueRange: BehaviorTreeNode<SquadBTData>{
     private Collider2D[] colliders = new Collider2D[2];
+    private GameUnit unit;
 
     public override NodeState evaluate(){
         SquadBTData sharedData = tree.sharedData;
@@ -10,8 +11,8 @@ public class CheckEnemyInPursueRange: BehaviorTreeNode<SquadBTData>{
         int hitCount = Physics2D.OverlapCircleNonAlloc(
             sharedData.squad.center, sharedData.findRange, colliders, sharedData.enemyMask);
         for(int i = 0; i < hitCount; i++){
-            if(!colliders[i].TryGetComponent(out Soldier soldier)) continue;
-            sharedData.target = soldier.ownSquad;
+            if(!colliders[i].TryGetComponent(out unit)) continue;
+            sharedData.target = unit.getOwnSquad();
             return state = NodeState.SUCCESS;
         }
         

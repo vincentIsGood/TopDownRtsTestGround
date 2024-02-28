@@ -36,4 +36,8 @@ public class IntervalActionUtils{
     public void stop(){
         started = false;
     }
+
+    public bool done(){
+        return Time.time - startTimeSec > intervalSec;
+    }
 }

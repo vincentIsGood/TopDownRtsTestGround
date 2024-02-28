@@ -1,15 +1,10 @@
 using System;
-using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
-/*
-Soldier +
-        |- HpBar
-        |- Soldier
-*/
-public class Soldier: MonoBehaviour, GameUnit{
+public class TankUnit: MonoBehaviour, GameUnit{
     public HpBar hpBar;
+    public Transform turretObject;
 
     public EntityStat stat = new EntityStat();
     public CombatManager combatManager;
@@ -21,7 +16,10 @@ public class Soldier: MonoBehaviour, GameUnit{
 
     private bool dead = false;
     private bool chaseTarget = false;
+    private bool canSeeEnemy = false;
+    private bool canResetTurret = true;
     private IntervalActionUtils shootUpdater;
+    private IntervalActionUtils turretAngleReseter;
 
     void Start(){
         combatManager = new CombatManager(this);
@@ -29,18 +27,26 @@ public class Soldier: MonoBehaviour, GameUnit{
         ownSquad = GetComponentInParent<Squad>();
         stat.setHpBar(hpBar);
         shootUpdater = new IntervalActionUtils(shoot, ownSquad.config.attackSpeedSec);
+        turretAngleReseter = new IntervalActionUtils(()=>canResetTurret = true, 15);
     }
     void Update(){
         if(target != null && !target.isDead()){
             if(chaseTarget){
                 agent.moveTo(target.getTransform());
             }
-            if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit) 
-            && hit.distance < ownSquad.config.attackRange){
+            canSeeEnemy = GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit) && hit.distance < ownSquad.config.attackRange;
+            if(canSeeEnemy){
+                turretRotateTowardsEnemy();
                 shootUpdater.tick();
             }else if(!chaseTarget){
                 setTarget(null);
             }
+        }else{
+            turretAngleReseter.tick();
+        }
+
+        if(canResetTurret){
+            resetTurretAngle();
         }
     }
 #if UNITY_EDITOR
@@ -54,9 +60,18 @@ public class Soldier: MonoBehaviour, GameUnit{
         Handles.DrawLine(transform.position, target.getTransform().position);
     }
 #endif
-
     private void shoot(){
         WeaponSuite.bulletForward(this, (target.getTransform().position - transform.position).normalized);
+    }
+    private void resetTurretAngle(){
+        turretObject.rotation = Quaternion.Lerp(turretObject.rotation, transform.rotation, Time.deltaTime * 10);
+    }
+    private void turretRotateTowardsEnemy(){
+        canResetTurret = false;
+        turretObject.rotation = Quaternion.Lerp(
+            turretObject.rotation, 
+            Quaternion.FromToRotation(Vector3.up, target.getTransform().position - transform.position), 
+            Time.deltaTime * 10);
     }
 
     public void onDie(){

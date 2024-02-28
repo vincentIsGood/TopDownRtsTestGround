@@ -1,13 +1,13 @@
 public class CombatManager{
-    private Soldier owner;
+    private GameUnit owner;
 
-    public CombatManager(Soldier owner){
+    public CombatManager(GameUnit owner){
         this.owner = owner;
     }
 
-    public void attack(Soldier enemy){
-        EntityStat ownerStat = owner.stat;
-        EntityStat enemyStat = enemy.stat;
+    public void attack(GameUnit enemy){
+        EntityStat ownerStat = owner.getStat();
+        EntityStat enemyStat = enemy.getStat();
 
         enemyStat.takeDamage(ownerStat.calculateDamage());
 
