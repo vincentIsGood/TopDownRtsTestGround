@@ -16,8 +16,9 @@ public class TargetSolver{
         List<GameUnit> enemies = enemySquad.getUnits();
         if(enemies.Count == 0) return null;
 
-        if(member.getTarget() != null){
-            if(!allowOverride) return member.getTarget();
+        GameUnit originalTarget = member.getTarget();
+        if(originalTarget != null){
+            if(!allowOverride && !originalTarget.isDead()) return originalTarget;
             else clearTargetFor(member);
         }
 

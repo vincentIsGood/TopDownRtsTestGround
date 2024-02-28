@@ -476,6 +476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7be99498ac8e5b42aefcd73f0c6a446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 10
 --- !u!4 &583738150 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8129814279974610461, guid: 04df839b79bc32447aa70909299214ee, type: 3}
@@ -564,17 +565,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1379928406323066930, guid: a479f874ee1ade949a98986f44e74bd5, type: 3}
   m_PrefabInstance: {fileID: 695197041}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &695197043 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4611695967585353617, guid: a479f874ee1ade949a98986f44e74bd5, type: 3}
-  m_PrefabInstance: {fileID: 695197041}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 695197044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34d9b72001cbb834c9321f8b796a9e27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &695197044 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2350106686271420557, guid: a479f874ee1ade949a98986f44e74bd5, type: 3}
@@ -799,7 +789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36984da2f15b82f4abfad228771fa72b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedSquads: {fileID: 695197043}
+  selectedSquads: {fileID: 2140195531}
 --- !u!1 &882047042
 GameObject:
   m_ObjectHideFlags: 0
@@ -1850,6 +1840,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f46dd5f269294bf4da0a12c09acb3be7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2140195531 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4611695967585353617, guid: a479f874ee1ade949a98986f44e74bd5, type: 3}
+  m_PrefabInstance: {fileID: 5622397092085978022}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140195529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34d9b72001cbb834c9321f8b796a9e27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &527380668651980149
