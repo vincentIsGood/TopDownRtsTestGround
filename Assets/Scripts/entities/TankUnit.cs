@@ -61,7 +61,7 @@ public class TankUnit: MonoBehaviour, GameUnit{
     }
 #endif
     private void shoot(){
-        WeaponSuite.bulletForward(this, (target.getTransform().position - transform.position).normalized);
+        WeaponSuite.bullet(this, (target.getTransform().position - transform.position).normalized);
     }
     private void resetTurretAngle(){
         turretObject.rotation = Quaternion.Lerp(turretObject.rotation, transform.rotation, Time.deltaTime * 10);

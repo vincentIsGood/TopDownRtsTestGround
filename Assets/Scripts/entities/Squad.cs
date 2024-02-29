@@ -55,7 +55,8 @@ public class Squad: MonoBehaviour{
 
         Handles.color = Color.green;
         foreach(GameUnit enemy in targetSolver.targetedEnemies){
-            Handles.DrawWireDisc(enemy.getTransform().position, Vector3.forward, 0.2f);
+            if(!enemy.isDead())
+                Handles.DrawWireDisc(enemy.getTransform().position, Vector3.forward, 0.2f);
         }
     }
 #endif

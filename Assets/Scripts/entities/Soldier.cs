@@ -56,7 +56,7 @@ public class Soldier: MonoBehaviour, GameUnit{
 #endif
 
     private void shoot(){
-        WeaponSuite.bulletForward(this, (target.getTransform().position - transform.position).normalized);
+        WeaponSuite.bullet(this, (target.getTransform().position - transform.position).normalized);
     }
 
     public void onDie(){
