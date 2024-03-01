@@ -5,7 +5,7 @@ using UnityEngine;
 public class Cover: MonoBehaviour{
     public CoverSide[] coverSides;
 
-    void Start(){
+    void Awake(){
         coverSides = GetComponentsInChildren<CoverSide>();
     }
 

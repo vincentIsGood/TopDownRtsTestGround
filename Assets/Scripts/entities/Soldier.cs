@@ -10,11 +10,11 @@ Soldier +
 */
 public class Soldier: MonoBehaviour, GameUnit{
     public HpBar hpBar;
-
     public EntityStat stat = new EntityStat();
-    public CombatManager combatManager;
-    [NonSerialized] public AiNavigator agent;
-    [NonSerialized] public Squad ownSquad;
+
+    private Squad ownSquad;
+    private AiNavigator agent;
+    private CombatManager combatManager;
 
     private GameUnit target = null;
     private Vector3 headingToPos;
@@ -23,12 +23,13 @@ public class Soldier: MonoBehaviour, GameUnit{
     private bool chaseTarget = false;
     private IntervalActionUtils shootUpdater;
 
-    void Start(){
-        combatManager = new CombatManager(this);
-        agent = GetComponent<AiNavigator>();
+    void Awake(){
         ownSquad = GetComponentInParent<Squad>();
-        stat.setHpBar(hpBar);
+        agent = GetComponent<AiNavigator>();
+        combatManager = new CombatManager(this);
         shootUpdater = new IntervalActionUtils(shoot, ownSquad.config.attackSpeedSec);
+
+        stat.setHpBar(hpBar);
     }
     void Update(){
         if(target != null && !target.isDead()){
@@ -69,8 +70,15 @@ public class Soldier: MonoBehaviour, GameUnit{
     }
 
     public void moveToPos(Vector3 pos){
+        agent.enableAvoidance();
         headingToPos = pos;
         agent.moveToPos(pos);
+    }
+    public void teleportToPos(Vector3 pos){
+        agent.disableAvoidance();
+        headingToPos = pos;
+        agent.moveToPos(pos);
+        transform.position = pos;
     }
     public void attackOnSight(GameUnit target){
         setTarget(target);
@@ -84,7 +92,7 @@ public class Soldier: MonoBehaviour, GameUnit{
     }
 
     public void stopAtFireDistance(){
-        agent.setStoppingDistance(Mathf.Max(0.1f, ownSquad.config.attackRange-0.5f));
+        agent.setStoppingDistance(Mathf.Max(0.1f, ownSquad.config.attackRange-0.2f));
     }
     public void moveCloseToPos(){
         agent.setStoppingDistance(0.1f);
@@ -100,6 +108,7 @@ public class Soldier: MonoBehaviour, GameUnit{
         return target;
     }
     public void setTarget(GameUnit target){
+        agent.enableAvoidance();
         this.target = target;
     }
     public Squad getOwnSquad(){

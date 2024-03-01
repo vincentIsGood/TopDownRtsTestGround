@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using com.vincentcodes.ai.behaviortree;
 using UnityEngine;
 
-// Shorten Behavior Tree = BT
+
 [RequireComponent(typeof(Squad))]
 public class SquadBehaviorTree : MonoBehaviour{
     private Squad squad;

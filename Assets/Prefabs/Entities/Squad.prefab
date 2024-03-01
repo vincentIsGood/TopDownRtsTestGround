@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1379928406323066930}
   - component: {fileID: 4611695967585353617}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Squad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5273669469570863858}
   - component: {fileID: 4086917849918460401}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: MoveToPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ Transform:
   m_GameObject: {fileID: 6407672186637116960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.97, y: -2.65, z: 0}
+  m_LocalPosition: {x: 5.556, y: -2.776, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -11,12 +11,12 @@ public class FormationSolver{
         this.ownSquad = ownSquad;
     }
 
-    // return local pos
+
     public Vector3 getNoFormationPos(GameUnit member){
         return soldierSquadLocalPos[member];
     }
 
-    // return abs pos
+
     public Vector3 getFormationPos(GameUnit member, Cover cover, Vector3 coverPos = new Vector3()){
         if(member is Soldier soldier){
             Transform spot = cover.assignClosestSpot(soldier);
@@ -43,7 +43,7 @@ public class FormationSolver{
     }
 
     public Vector3 calcLocalPos(GameUnit member, Vector3 squadCenter){
-        // separation
+
         Vector3 separationForce = Vector3.zero;
         foreach(GameUnit other in ownSquad.getUnits()){
             float dist = Vector3.Distance(member.getTransform().position, other.getTransform().position);
@@ -56,13 +56,13 @@ public class FormationSolver{
             separationForce /= ownSquad.getUnits().Count-1;
         }
 
-        // cohesion
+
         Vector3 cohesionForce = squadCenter - member.getTransform().position;
         return ownSquad.config.separation * separationForce.normalized + ownSquad.config.cohesion * cohesionForce.normalized;
     }
 
     public static Vector3 center(Vector3[] vects){
-        // avg pos
+
         Vector3 result = Vector3.zero;
         foreach(Vector3 vect in vects){
             result += vect;

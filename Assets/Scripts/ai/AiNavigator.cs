@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-// Unity 2d only
+
 [RequireComponent(typeof(NavMeshAgent))]
 public class AiNavigator : MonoBehaviour{
     [SerializeField] 
@@ -12,7 +12,7 @@ public class AiNavigator : MonoBehaviour{
 
     private NavMeshAgent agent;
 
-    void Start(){
+    void Awake(){
         agent = GetComponent<NavMeshAgent>();
         agent.updateUpAxis = false;
         agent.updateRotation = false;
@@ -58,7 +58,14 @@ public class AiNavigator : MonoBehaviour{
             transform.rotation = Quaternion.AngleAxis(findAngle(agent.velocity.normalized), Vector3.forward);
     }
 
-    // No rotation along xyz == forward (ideally point upward + no rotation == point forward)
+    public void disableAvoidance(){
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+    }
+    public void enableAvoidance(){
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+    }
+
+
     public static float findAngle(Vector3 direction){
         return Quaternion.FromToRotation(Vector3.up, direction).eulerAngles.z;
     }

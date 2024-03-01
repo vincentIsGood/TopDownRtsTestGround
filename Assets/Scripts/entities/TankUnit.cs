@@ -21,7 +21,7 @@ public class TankUnit: MonoBehaviour, GameUnit{
     private IntervalActionUtils shootUpdater;
     private IntervalActionUtils turretAngleReseter;
 
-    void Start(){
+    void Awake(){
         combatManager = new CombatManager(this);
         agent = GetComponent<AiNavigator>();
         ownSquad = GetComponentInParent<Squad>();
@@ -61,16 +61,18 @@ public class TankUnit: MonoBehaviour, GameUnit{
     }
 #endif
     private void shoot(){
-        WeaponSuite.bullet(this, (target.getTransform().position - transform.position).normalized);
+        WeaponSuite.antiTankBullet(this, (target.getTransform().position - transform.position).normalized);
     }
     private void resetTurretAngle(){
         turretObject.rotation = Quaternion.Lerp(turretObject.rotation, transform.rotation, Time.deltaTime * 10);
     }
     private void turretRotateTowardsEnemy(){
+        Vector3 enemyDirection = target.getTransform().position - transform.position;
+        enemyDirection.z = 0;
         canResetTurret = false;
         turretObject.rotation = Quaternion.Lerp(
             turretObject.rotation, 
-            Quaternion.FromToRotation(Vector3.up, target.getTransform().position - transform.position), 
+            Quaternion.FromToRotation(Vector3.up, enemyDirection), 
             Time.deltaTime * 10);
     }
 
@@ -86,6 +88,9 @@ public class TankUnit: MonoBehaviour, GameUnit{
     public void moveToPos(Vector3 pos){
         headingToPos = pos;
         agent.moveToPos(pos);
+    }
+    public void teleportToPos(Vector3 pos){
+        moveToPos(pos);
     }
     public void attackOnSight(GameUnit target){
         setTarget(target);

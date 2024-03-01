@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// https://www.reddit.com/r/Unity3D/comments/7ujevc/how_to_program_a_cover_system_similar_to_an_rts/
+
 public class CoverSide: MonoBehaviour{
-    // What you have to do is to PRE-DEFINE where the spots are in a prefab or sth.
+
     public List<Transform> coverSpots = new List<Transform>();
     public Soldier[] occupiedSpots;
     private int occupiedCount = 0;
@@ -53,6 +53,10 @@ public class CoverSide: MonoBehaviour{
         foreach(Soldier soldier in occupiedSpots){
             if(!soldier) leaveSpot(soldier);
         }
+    }
+
+    public bool hasEnoughSpaceFor(Squad squad){
+        return squad.getUnits().Count + occupiedCount <= coverSpots.Count;
     }
 
     public bool isAnySpotAvailable(){

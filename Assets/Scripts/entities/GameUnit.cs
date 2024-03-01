@@ -6,6 +6,7 @@ public interface GameUnit{
     public void onEnemyKilled(GameUnit enemy);
 
     public void moveToPos(Vector3 pos);
+    public void teleportToPos(Vector3 pos);
     public void attackOnSight(GameUnit target);
     public void attackAndMove(GameUnit target);
 

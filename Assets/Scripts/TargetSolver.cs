@@ -11,7 +11,7 @@ public class TargetSolver{
         this.ownSquad = ownSquad;
     }
 
-    // remember to clearTarget() from "member"
+
     public GameUnit assignTargetFrom(Squad enemySquad, GameUnit member, bool allowOverride = true){
         List<GameUnit> enemies = enemySquad.getUnits();
         if(enemies.Count == 0) return null;
@@ -31,7 +31,7 @@ public class TargetSolver{
             target = enemies[0];
         }
         if(target == null){
-            // fallback
+
             target = findClosestEnemy(enemies, member);
         }
 
@@ -70,7 +70,7 @@ public class TargetSolver{
     private GameUnit findEnemyDistributed(List<GameUnit> enemies, GameUnit member){
         GameUnit target = null;
         foreach(GameUnit soldier in enemies){
-            // TODO: use probability?
+
             if(targetedEnemies.Contains(soldier)) continue;
             target = soldier;
             break;

@@ -21,7 +21,7 @@ public class EntityStat{
         health = Mathf.Max(health - damage, 0);
         updateUI();
     }
-    
+
     public void heal(float amount){
         health = Mathf.Min(health + damage, maxHealth);
         updateUI();

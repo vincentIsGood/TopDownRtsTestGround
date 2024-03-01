@@ -5,30 +5,38 @@ using UnityEditor;
 using UnityEngine;
 
 public class Squad: MonoBehaviour{
-    public float spawnRadius = 2f;
     public SquadBTData config;
+
+    [NonSerialized] public GamePlayer owner;
+    [NonSerialized] public Vector3 center;
+    [NonSerialized] public int originalAmount;
+    
+    private bool insideBuilding;
+    private Action enterAction;
+    private Action exitAction;
 
     private FormationSolver formation;
     private TargetSolver targetSolver;
 
-    [NonSerialized] public Vector3 center;
-    [NonSerialized] public bool aiControl;
-
     private List<GameUnit> members;
     private TargetPosIndicator targetPosIndicator;
     private Transform targetPos;
+    private Vector3 headingToPos;
 
     private CoverSide cover;
     private Squad targetSquad;
 
-    void Start(){
+    void Awake(){
         formation = new FormationSolver(this);
         targetSolver = new TargetSolver(this);
         members = GetComponentsInChildren<GameUnit>().ToList();
         targetPosIndicator = GetComponentInChildren<TargetPosIndicator>();
         targetPos = targetPosIndicator.transform;
 
+        originalAmount = members.Count;
         config.assign(this);
+    }
+    void Start(){
         initMembers();
     }
     private void initMembers(){
@@ -40,14 +48,18 @@ public class Squad: MonoBehaviour{
 
     void Update(){
         center = findCenter();
+
+        if(enterAction != null && Vector3.Distance(center, headingToPos) < config.enterRadius){
+            enterAction?.Invoke();
+            enterAction = null;
+        }
     }
 
 #if UNITY_EDITOR
-    // https://discussions.unity.com/t/draw-2d-circle-with-gizmos/123578/1
+
     void OnDrawGizmos(){
         if(!EditorApplication.isPlaying) return;
         Handles.color = Color.black;
-        Handles.DrawWireDisc(targetPos.position, Vector3.forward, spawnRadius);
         Handles.DrawWireDisc(center, Vector3.forward, 0.1f);
         Handles.color = Color.yellow;
         foreach(GameUnit unit in members)
@@ -70,6 +82,7 @@ public class Squad: MonoBehaviour{
         formation.updateMembersLocalPos();
 
         if(members.Count == 0){
+            owner.removeSquad(this);
             Destroy(this.gameObject);
         }
     }
@@ -79,33 +92,56 @@ public class Squad: MonoBehaviour{
     }
 
     public void moveToPos(Vector3 pos){
-        targetPos.position = pos;
-        targetSolver.clearSquadTargets();
-        targetSquad = null;
+        moveToPosReset(pos);
 
-        if(this.cover){
-            leaveCover();
-            this.cover = null;
-        }
-
-        formation.updateMembersLocalPos();
         foreach(GameUnit member in members){
             member.resetStoppingDistance();
             member.moveToPos(pos + formation.getNoFormationPos(member));
         }
     }
     public void moveToPos(Vector3 pos, Cover cover){
-        targetPos.position = pos;
-        targetSolver.clearSquadTargets();
-        targetSquad = null;
-
-        if(this.cover) leaveCover();
+        moveToPosReset(pos);
         this.cover = cover.findClosestSide(this);
 
-        formation.updateMembersLocalPos();
+        if(members[0] is not Soldier){
+            moveToPos(pos);
+            return;
+        }
+
         foreach(GameUnit member in members){
             member.moveCloseToPos();
             member.moveToPos(formation.getFormationPos(member, this.cover, pos));
+        }
+    }
+    public void moveToPos(Vector3 pos, EnterableHouse house){
+        moveToPosReset(pos);
+        if(!house.hasEnoughSpaceFor(this))
+            return;
+        
+        if(members[0] is not Soldier){
+            moveToPos(pos);
+            return;
+        }
+        
+        headingToPos = house.getEntrancePos();
+        enterAction = ()=>{
+            if(!house.hasEnoughSpaceFor(this))
+                return;
+            cover = house.space;
+            insideBuilding = true;
+            formation.updateMembersLocalPos();
+            foreach(GameUnit member in members){
+                member.teleportToPos(house.enter(member));
+            }
+        };
+        exitAction = ()=>{
+            foreach(GameUnit member in members){
+                member.teleportToPos(house.getEntrancePos() + formation.getNoFormationPos(member));
+            }
+        };
+        foreach(GameUnit member in members){
+            member.moveCloseToPos();
+            member.moveToPos(headingToPos);
         }
     }
     public void moveToPos(Vector3 pos, Squad squad){
@@ -113,7 +149,6 @@ public class Squad: MonoBehaviour{
         targetPos.position = pos;
         targetSquad = squad;
 
-        formation.updateMembersLocalPos();
         foreach(GameUnit member in members){
             member.attackAndMove(targetSolver.assignTargetFrom(squad, member));
         }
@@ -128,6 +163,24 @@ public class Squad: MonoBehaviour{
             member.attackOnSight(targetSolver.assignTargetFrom(squad, member, false));
         }
     }
+    private void moveToPosReset(Vector3 pos){
+        targetPos.position = pos;
+        targetSolver.clearSquadTargets();
+        targetSquad = null;
+        
+        if(exitAction != null && insideBuilding){
+            exitAction?.Invoke();
+            exitAction = null;
+            insideBuilding = false;
+        }
+
+        if(this.cover){
+            leaveCover();
+            this.cover = null;
+        }
+
+        formation.updateMembersLocalPos();
+    }
     
     public void leaveCover(){
         foreach(GameUnit member in members){
@@ -137,7 +190,7 @@ public class Squad: MonoBehaviour{
     }
 
     public Vector3 findCenter(){
-        // avg pos
+
         Vector3 result = Vector3.zero;
         foreach(GameUnit member in members){
             result += member.getTransform().position;
@@ -145,7 +198,7 @@ public class Squad: MonoBehaviour{
         return result / members.Count;
     }
 
-    // Getter & Setters
+
     public List<GameUnit> getUnits(){
         return members;
     }
