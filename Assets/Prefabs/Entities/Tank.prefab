@@ -248,6 +248,7 @@ MonoBehaviour:
     health: 1000
     maxHealth: 1000
     damage: 50
+    defense: 0
 --- !u!1 &2408321361560153628
 GameObject:
   m_ObjectHideFlags: 0

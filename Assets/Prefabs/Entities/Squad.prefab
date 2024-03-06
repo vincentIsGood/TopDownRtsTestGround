@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1379928406323066930}
   - component: {fileID: 4611695967585353617}
+  - component: {fileID: 4373700647299046170}
   m_Layer: 11
   m_Name: Squad
   m_TagString: Untagged
@@ -45,17 +46,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34d9b72001cbb834c9321f8b796a9e27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnRadius: 2
   config:
     enemyMask:
       serializedVersion: 2
       m_Bits: 4096
     wallMask:
       serializedVersion: 2
-      m_Bits: 1024
+      m_Bits: 9216
     coverMask:
       serializedVersion: 2
       m_Bits: 512
+    enterRadius: 1
     findRange: 3
     chaseRange: 3
     attackRange: 8
@@ -63,6 +64,18 @@ MonoBehaviour:
     separation: 2
     cohesion: 1.3
     targetMode: 0
+--- !u!114 &4373700647299046170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350106686271420557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f46dd5f269294bf4da0a12c09acb3be7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6407672186637116960
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +102,7 @@ Transform:
   m_GameObject: {fileID: 6407672186637116960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.556, y: -2.776, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
