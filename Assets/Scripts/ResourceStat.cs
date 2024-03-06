@@ -1,11 +1,16 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public class ResourceStat{
     public float oil;
     public float iron;
     public float food;
-    
+
+    private float maxOil = 999999;
+    private float maxIron = 999999;
+    private float maxFood = 999999;
+
     public bool canAfford(ResourceStat amount){
         if(oil - amount.oil < 0){
             return false;
@@ -20,13 +25,13 @@ public class ResourceStat{
     }
 
     public void subtract(ResourceStat amount){
-        oil -= amount.oil;
-        iron -= amount.iron;
-        food -= amount.food;
+        oil = Mathf.Max(-maxOil, oil - amount.oil);
+        iron = Mathf.Max(-maxIron, iron - amount.iron);
+        food = Mathf.Max(-maxFood, food - amount.food);
     }
     public void add(ResourceStat amount){
-        oil += amount.oil;
-        iron += amount.iron;
-        food += amount.food;
+        oil = Mathf.Min(oil + amount.oil, maxOil);
+        iron = Mathf.Min(iron + amount.iron, maxIron);
+        food = Mathf.Min(food + amount.food, maxFood);
     }
 }

@@ -3,22 +3,20 @@ using UnityEngine;
 
 [Serializable]
 public class EntityStat{
+    public static EntityStat identity = new EntityStat(){damage = 1, defense = 1};
+
     public float health;
     public float maxHealth;
     public float damage;
+    public float defense;
 
     private HpBar hpBar;
 
-    public void setHpBar(HpBar hpBar){
-        this.hpBar = hpBar;
-    }
+    public void takeDamage(float damage, EntityStat effectScaler = null){
+        if(effectScaler == null) effectScaler = identity;
 
-    public float calculateDamage(){
-        return damage;
-    }
-
-    public void takeDamage(float damage){
-        health = Mathf.Max(health - damage, 0);
+        float finalDamage = damage * effectScaler.damage - defense * effectScaler.defense;
+        health = Mathf.Max(health - finalDamage, 0);
         updateUI();
     }
 
@@ -27,7 +25,11 @@ public class EntityStat{
         updateUI();
     }
 
+    public void setHpBar(HpBar hpBar){
+        this.hpBar = hpBar;
+    }
+
     private void updateUI(){
-        hpBar.setHp(health / maxHealth);
+        hpBar?.setHp(health / maxHealth);
     }
 }

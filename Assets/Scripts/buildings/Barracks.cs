@@ -10,6 +10,11 @@ public class Barracks: GameBuilding{
         };
     }
 
+    public override void onDestroyed(){
+        Destroy(gameObject);
+        base.onDestroyed();
+    }
+
     [ContextMenu("Player as Owner")]
     public void playerOwner(){
         owner = RtsController.instance.player;

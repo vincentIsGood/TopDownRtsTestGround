@@ -1,39 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// https://forum.unity.com/threads/are-raycasthit-arrays-returned-from-raycastall-in-proper-order.385131/
 public class GameVisionUtils{
     public static float maxVisionLength = 10;
 
     private static RaycastHit2D[] hits = new RaycastHit2D[5];
+    private static HashSet<GameObject> emptyExclude = new HashSet<GameObject>();
 
-    public static bool canSeeTarget(GameUnit from, GameUnit to){
-        int layerMask = from.getOwnSquad().config.enemyMask | from.getOwnSquad().config.wallMask;
-        Vector3 direction = (to.getTransform().position - from.getTransform().position).normalized;
-        int hitCount = Physics2D.RaycastNonAlloc(from.getTransform().position, direction, hits, maxVisionLength, layerMask);
-        if(hitCount == 0) return false;
-        sortHits(hits, hitCount);
-
-        for(int i = 0; i < hitCount; i++){
-            RaycastHit2D hit = hits[i];
-            if(isWallHit(hit.collider, from.getOwnSquad().config.wallMask))
-                return false;
-            if(hit.collider.TryGetComponent(out GameUnit _)){
-                return true;
-            }
-        }
-        return false;
+    public static bool canSeeTarget(GameUnit from, GameUnit to, HashSet<GameObject> exclude = null){
+        return canSeeTarget(from, to, out _, exclude);
     }
-    public static bool canSeeTarget(GameUnit from, GameUnit to, out RaycastHit2D hit){
+    public static bool canSeeTarget(GameUnit from, GameUnit to, out RaycastHit2D hit, HashSet<GameObject> exclude = null){
+        hit = default;
+        if(to.isDead()) return false;
+
         int layerMask = from.getOwnSquad().config.enemyMask | from.getOwnSquad().config.wallMask;
         Vector3 direction = (to.getTransform().position - from.getTransform().position).normalized;
         int hitCount = Physics2D.RaycastNonAlloc(from.getTransform().position, direction, hits, maxVisionLength, layerMask);
-        hit = default;
         if(hitCount == 0) return false;
         sortHits(hits, hitCount);
-        
+
+        exclude ??= emptyExclude;
         for(int i = 0; i < hitCount; i++){
             hit = hits[i];
+            if(exclude.Contains(hit.collider.gameObject)) continue;
             if(isWallHit(hit.collider, from.getOwnSquad().config.wallMask))
                 return false;
             if(hit.collider.TryGetComponent(out GameUnit _)){
@@ -43,24 +33,13 @@ public class GameVisionUtils{
         return false;
     }
     
-    public static bool canSeeTarget(Squad from, GameUnit to){
-        int layerMask = from.config.enemyMask | from.config.wallMask;
-        Vector3 direction = (to.getTransform().position - from.center).normalized;
-        int hitCount = Physics2D.RaycastNonAlloc(from.center, direction, hits, maxVisionLength, layerMask);
-        if(hitCount == 0) return false;
-        sortHits(hits, hitCount);
-
-        for(int i = 0; i < hitCount; i++){
-            RaycastHit2D hit = hits[i];
-            if(isWallHit(hit.collider, from.config.wallMask))
-                return false;
-            if(anyHitOnUnitOrSquad(hit.collider)){
-                return true;
-            }
-        }
-        return false;
+    public static bool canSeeTarget(Squad from, GameUnit to, HashSet<GameObject> exclude = null){
+        return canSeeTarget(from, to, out _, exclude);
     }
-    public static bool canSeeTarget(Squad from, GameUnit to, out RaycastHit2D hit){
+    public static bool canSeeTarget(Squad from, GameUnit to, out RaycastHit2D hit, HashSet<GameObject> exclude = null){
+        hit = default;
+        if(to.isDead()) return false;
+        
         int layerMask = from.config.enemyMask | from.config.wallMask;
         Vector3 direction = (to.getTransform().position - from.center).normalized;
         int hitCount = Physics2D.RaycastNonAlloc(from.center, direction, hits, maxVisionLength, layerMask);
@@ -68,8 +47,10 @@ public class GameVisionUtils{
         if(hitCount == 0) return false;
         sortHits(hits, hitCount);
 
+        exclude ??= emptyExclude;
         for(int i = 0; i < hitCount; i++){
             hit = hits[i];
+            if(exclude.Contains(hit.collider.gameObject)) continue;
             if(isWallHit(hit.collider, from.config.wallMask))
                 return false;
             if(anyHitOnUnitOrSquad(hit.collider)){

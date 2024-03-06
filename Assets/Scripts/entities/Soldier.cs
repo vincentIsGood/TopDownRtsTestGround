@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,7 +37,7 @@ public class Soldier: MonoBehaviour, GameUnit{
             if(chaseTarget){
                 agent.moveTo(target.getTransform());
             }
-            if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit) 
+            if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit, ownSquad.getExcludeFromView()) 
             && hit.distance < ownSquad.config.attackRange){
                 shootUpdater.tick();
             }else if(!chaseTarget){
@@ -47,7 +48,7 @@ public class Soldier: MonoBehaviour, GameUnit{
 #if UNITY_EDITOR
     void OnDrawGizmos(){
         if(target == null || target.isDead()) return;
-        if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit)){
+        if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit, ownSquad.getExcludeFromView())){
             if(hit.distance < ownSquad.config.attackRange){
                 Handles.color = Color.blue;
             }else Handles.color = Color.black;
@@ -68,17 +69,19 @@ public class Soldier: MonoBehaviour, GameUnit{
     public void onEnemyKilled(GameUnit enemy){
         ownSquad.onEnemyKilled(this, enemy);
     }
+    public void onBuildingDestroyed(GameBuilding house){
+        ownSquad.onBuildingDestroyed(this, house);
+    }
 
     public void moveToPos(Vector3 pos){
-        agent.enableAvoidance();
         headingToPos = pos;
         agent.moveToPos(pos);
     }
     public void teleportToPos(Vector3 pos){
-        agent.disableAvoidance();
         headingToPos = pos;
         agent.moveToPos(pos);
         transform.position = pos;
+        agent.disable();
     }
     public void attackOnSight(GameUnit target){
         setTarget(target);
@@ -108,7 +111,6 @@ public class Soldier: MonoBehaviour, GameUnit{
         return target;
     }
     public void setTarget(GameUnit target){
-        agent.enableAvoidance();
         this.target = target;
     }
     public Squad getOwnSquad(){

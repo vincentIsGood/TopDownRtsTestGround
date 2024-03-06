@@ -5,10 +5,15 @@ using UnityEngine;
 [DefaultExecutionOrder(0)]
 public class RtsController: MonoBehaviour{
     public static RtsController instance;
+    
+    [Header("Player")]
+    public GamePlayer player = new GamePlayer("player");
 
-    public GamePlayer player = new GamePlayer();
-    public GamePlayer enemy = new GamePlayer(){isAlly = false};
+    [Header("Enemy")]
+    public GamePlayer enemy = new GamePlayer("enemy"){isAlly = false};
+    public CommanderBTData enemyCommanderConfig = new CommanderBTData();
 
+    [Header("Debug")]
     public List<Squad> selectedSquads = new List<Squad>();
 
     private GameObject selectionBox;
@@ -25,6 +30,8 @@ public class RtsController: MonoBehaviour{
     void Update(){
         leftClick();
         rightClick();
+
+        DebugMsgPanel.instance.showStats(player.resourceStat, enemy.resourceStat);
     }
 
     private RaycastHit2D[] hitInfos = new RaycastHit2D[1];

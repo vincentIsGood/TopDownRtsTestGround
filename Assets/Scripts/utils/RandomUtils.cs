@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RandomUtils{
@@ -5,6 +6,11 @@ public class RandomUtils{
         get{
             return Random.Range(-1f, 1f);
         }
+    }
+
+    public static T randomElement<T>(List<T> arr){
+        if(arr.Count == 0) return default(T);
+        return arr[Random.Range(0, arr.Count)];
     }
 
     public static Vector3 random(){

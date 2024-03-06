@@ -1,19 +1,41 @@
+using System.Linq;
+
 public class CombatManager{
-    private GameUnit owner;
+    private GameUnit attacker;
 
     public CombatManager(GameUnit owner){
-        this.owner = owner;
+        this.attacker = owner;
     }
 
     public void attack(GameUnit enemy){
-        EntityStat ownerStat = owner.getStat();
+        EntityStat attackerStat = attacker.getStat();
         EntityStat enemyStat = enemy.getStat();
 
-        enemyStat.takeDamage(ownerStat.calculateDamage());
+        enemyStat.takeDamage(enemyStat.damage);
 
         if(enemyStat.health <= 0){
             enemy.onDie();
-            owner.onEnemyKilled(enemy);
+            attacker.onEnemyKilled(enemy);
+        }
+    }
+    public void attack(GameBuilding building){
+        EntityStat attackerStat = attacker.getStat();
+        EntityStat buildingStat = building.stat;
+
+        buildingStat.takeDamage(attackerStat.damage);
+        if(building is EnterableHouse house && !house.isDestroyed && !house.isEmpty()){
+            Squad squad = RandomUtils.randomElement(house.squads);
+            Soldier enemy = (Soldier)RandomUtils.randomElement(squad.getUnits());
+            enemy.stat.takeDamage(attackerStat.damage, building.reductionStatScaler);
+            if(enemy.stat.health <= 0){
+                enemy.onDie();
+                attacker.onEnemyKilled(enemy);
+            }
+        }
+
+        if(buildingStat.health <= 0){
+            building.onDestroyed();
+            attacker.onBuildingDestroyed(building);
         }
     }
 }

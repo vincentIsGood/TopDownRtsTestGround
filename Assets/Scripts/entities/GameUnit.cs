@@ -4,6 +4,7 @@ public interface GameUnit{
     
     public void onDie();
     public void onEnemyKilled(GameUnit enemy);
+    public void onBuildingDestroyed(GameBuilding building);
 
     public void moveToPos(Vector3 pos);
     public void teleportToPos(Vector3 pos);
@@ -27,4 +28,5 @@ public interface GameUnit{
     public Transform getTransform();
 
     public bool isDead();
+
 }

@@ -7,10 +7,10 @@ using UnityEngine;
 public class Squad: MonoBehaviour{
     public SquadBTData config;
 
-    [NonSerialized] public GamePlayer owner;
+    [NonSerialized] public GamePlayer player;
     [NonSerialized] public Vector3 center;
     [NonSerialized] public int originalAmount;
-    
+
     private bool insideBuilding;
     private Action enterAction;
     private Action exitAction;
@@ -18,10 +18,11 @@ public class Squad: MonoBehaviour{
     private FormationSolver formation;
     private TargetSolver targetSolver;
 
+    [NonSerialized] public Transform targetPos;
     private List<GameUnit> members;
     private TargetPosIndicator targetPosIndicator;
-    private Transform targetPos;
     private Vector3 headingToPos;
+    private HashSet<GameObject> excludeFromView = new HashSet<GameObject>();
 
     private CoverSide cover;
     private Squad targetSquad;
@@ -41,7 +42,7 @@ public class Squad: MonoBehaviour{
     }
     private void initMembers(){
         foreach(GameUnit member in members){
-            member.getTransform().position = targetPos.position + RandomUtils.randomWithNeg(0.1f, 0.1f, 0);
+            member.getTransform().position = transform.position + RandomUtils.randomWithNeg(0.1f, 0.1f, 0);
         }
         formation.updateMembersLocalPos();
     }
@@ -82,13 +83,17 @@ public class Squad: MonoBehaviour{
         formation.updateMembersLocalPos();
 
         if(members.Count == 0){
-            owner.removeSquad(this);
+            player.removeSquad(this);
+            moveToPosReset(transform.position);
             Destroy(this.gameObject);
         }
     }
     public void onEnemyKilled(GameUnit attacker, GameUnit enemy){
         targetSolver.clearTargetFor(attacker);
         fireTowards(enemy.getOwnSquad());
+    }
+    public void onBuildingDestroyed(GameUnit attacker, GameBuilding building){
+        targetSolver.clearTargetFor(attacker);
     }
 
     public void moveToPos(Vector3 pos){
@@ -115,7 +120,7 @@ public class Squad: MonoBehaviour{
     }
     public void moveToPos(Vector3 pos, EnterableHouse house){
         moveToPosReset(pos);
-        if(!house.hasEnoughSpaceFor(this))
+        if(!house.canEnter(this))
             return;
         
         if(members[0] is not Soldier){
@@ -125,19 +130,24 @@ public class Squad: MonoBehaviour{
         
         headingToPos = house.getEntrancePos();
         enterAction = ()=>{
-            if(!house.hasEnoughSpaceFor(this))
+            if(!house.canEnter(this))
                 return;
             cover = house.space;
             insideBuilding = true;
             formation.updateMembersLocalPos();
+            house.squadEntered(this);
             foreach(GameUnit member in members){
+                excludeFromView.Add(house.gameObject);
                 member.teleportToPos(house.enter(member));
             }
         };
         exitAction = ()=>{
+            house.squadLeaved(this);
             foreach(GameUnit member in members){
+                excludeFromView.Remove(house.gameObject);
                 member.teleportToPos(house.getEntrancePos() + formation.getNoFormationPos(member));
             }
+            house = null;
         };
         foreach(GameUnit member in members){
             member.moveCloseToPos();
@@ -163,7 +173,13 @@ public class Squad: MonoBehaviour{
             member.attackOnSight(targetSolver.assignTargetFrom(squad, member, false));
         }
     }
-    private void moveToPosReset(Vector3 pos){
+    public void fireTowards(GameUnit unit){
+        formation.updateMembersLocalPos();
+        foreach(GameUnit member in members){
+            member.attackOnSight(unit);
+        }
+    }
+    public void moveToPosReset(Vector3 pos){
         targetPos.position = pos;
         targetSolver.clearSquadTargets();
         targetSquad = null;
@@ -198,6 +214,12 @@ public class Squad: MonoBehaviour{
         return result / members.Count;
     }
 
+    public bool isExcludedFromView(GameObject go){
+        return excludeFromView.Contains(go);
+    }
+    public HashSet<GameObject> getExcludeFromView(){
+        return excludeFromView;
+    }
 
     public List<GameUnit> getUnits(){
         return members;

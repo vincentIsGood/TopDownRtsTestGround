@@ -19,15 +19,19 @@ public class Bullet: MonoBehaviour{
     }
 
     void OnTriggerEnter2D(Collider2D collider){
-        GameUnit unit;
         int layerMask = owner.getOwnSquad().config.enemyMask | owner.getOwnSquad().config.wallMask;
+        if(owner.getOwnSquad().isExcludedFromView(collider.gameObject)) return;
         if((1 << collider.gameObject.layer & layerMask) == 0) return;
-        if(collider.TryGetComponent(out unit)){
+        
+        CombatManager combatManager = owner.getCombatManager();
+        if(collider.TryGetComponent(out GameBuilding building)){
+            combatManager.attack(building);
+        }else if(collider.TryGetComponent(out GameUnit unit)){
             if(unit is TankUnit){
                 if(type == BulletType.ANTI_TANK)
-                    owner.getCombatManager().attack(unit);
+                    combatManager.attack(unit);
             }else{
-                owner.getCombatManager().attack(unit);
+                combatManager.attack(unit);
             }
         }
         Destroy(this.gameObject);

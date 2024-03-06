@@ -26,12 +26,14 @@ public class AiNavigator : MonoBehaviour{
     }
 
     public void moveTo(Transform target){
+        enable();
         this.target = target;
         if(target == null){
             agent.SetDestination(agent.transform.position);
         }
     }
     public void moveToPos(Vector3 pos){
+        enable();
         moveTo(null);
         agent.SetDestination(pos);
     }
@@ -58,10 +60,13 @@ public class AiNavigator : MonoBehaviour{
             transform.rotation = Quaternion.AngleAxis(findAngle(agent.velocity.normalized), Vector3.forward);
     }
 
-    public void disableAvoidance(){
+    public void disable(){
+        agent.enabled = false;
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
     }
-    public void enableAvoidance(){
+    public void enable(){
+        if(!agent.enabled)
+            agent.enabled = true;
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
     }
 

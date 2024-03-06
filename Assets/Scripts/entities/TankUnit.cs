@@ -34,7 +34,7 @@ public class TankUnit: MonoBehaviour, GameUnit{
             if(chaseTarget){
                 agent.moveTo(target.getTransform());
             }
-            canSeeEnemy = GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit) && hit.distance < ownSquad.config.attackRange;
+            canSeeEnemy = GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit, ownSquad.getExcludeFromView()) && hit.distance < ownSquad.config.attackRange;
             if(canSeeEnemy){
                 turretRotateTowardsEnemy();
                 shootUpdater.tick();
@@ -52,7 +52,7 @@ public class TankUnit: MonoBehaviour, GameUnit{
 #if UNITY_EDITOR
     void OnDrawGizmos(){
         if(target == null || target.isDead()) return;
-        if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit)){
+        if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit, ownSquad.getExcludeFromView())){
             if(hit.distance < ownSquad.config.attackRange){
                 Handles.color = Color.blue;
             }else Handles.color = Color.black;
@@ -83,6 +83,9 @@ public class TankUnit: MonoBehaviour, GameUnit{
     }
     public void onEnemyKilled(GameUnit enemy){
         ownSquad.onEnemyKilled(this, enemy);
+    }
+    public void onBuildingDestroyed(GameBuilding house){
+        ownSquad.onBuildingDestroyed(this, house);
     }
 
     public void moveToPos(Vector3 pos){

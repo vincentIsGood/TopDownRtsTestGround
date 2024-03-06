@@ -10,7 +10,7 @@ public class SquadBTData{
     public LayerMask coverMask;
 
     [Header("Ranges")]
-    public float enterRadius = 0.5f;
+    public float enterRadius = 1f;
     public float findRange = 2;
     public float chaseRange = 4;
     public float attackRange = 4;
@@ -25,9 +25,9 @@ public class SquadBTData{
     [Header("Target Solver")]
     public TargetMode targetMode = TargetMode.Closest;
 
-
     [NonSerialized] public Squad squad;
     [NonSerialized] public Squad target;
+    [NonSerialized] public GameUnit targetUnit;
 
     public void assign(Squad squad){
         this.squad = squad;
