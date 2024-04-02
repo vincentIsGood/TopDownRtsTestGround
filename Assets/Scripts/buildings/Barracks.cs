@@ -6,11 +6,11 @@ public class Barracks: GameBuilding{
     void Awake(){
         spawnOptions = new List<SpawnOption>(){
             AssetDatabase.LoadAssetAtPath<SpawnOption>("Assets/Config/Spawn/Infantry.asset"),
-            AssetDatabase.LoadAssetAtPath<SpawnOption>("Assets/Config/Spawn/TankSquad.asset"),
         };
     }
 
     public override void onDestroyed(){
+        owner.removeBuilding(this);
         Destroy(gameObject);
         base.onDestroyed();
     }
@@ -18,20 +18,17 @@ public class Barracks: GameBuilding{
     [ContextMenu("Player as Owner")]
     public void playerOwner(){
         owner = RtsController.instance.player;
+        owner.addBuilding(this);
     }
 
     [ContextMenu("Enemy as Owner")]
     public void enemyOwner(){
-        owner = RtsController.instance.enemy;
+        owner = EnemyController.instance.ai;
+        owner.addBuilding(this);
     }
 
     [ContextMenu("Spawn/Infantry")]
-    public void spawnInfantry(){
-        spawnSquad(spawnOptions[0]);
-    }
-    
-    [ContextMenu("Spawn/Tank")]
-    public void spawnTank(){
-        spawnSquad(spawnOptions[1]);
+    public Squad spawnInfantry(){
+        return spawnSquad(spawnOptions[0]);
     }
 }

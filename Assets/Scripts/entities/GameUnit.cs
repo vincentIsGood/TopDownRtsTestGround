@@ -14,6 +14,7 @@ public interface GameUnit{
     public void stopAtFireDistance();
     public void moveCloseToPos();
     public void resetStoppingDistance();
+    public void setStoppingDistance(float dist);
 
     public Vector3 getHeadingToPos();
     public GameUnit getTarget();

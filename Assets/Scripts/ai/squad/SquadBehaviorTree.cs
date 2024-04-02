@@ -16,14 +16,22 @@ public class SquadBehaviorTree : MonoBehaviour{
     }
 
     void Update(){
-        updateTreeUpdater.tick();
+        if(squad.config.enableAi)
+            updateTreeUpdater.tick();
     }
 
     public BehaviorTree<SquadBTData> buildTree(){
         BehaviorTree<SquadBTData> tree = new BehaviorTree<SquadBTData>(squad.config);
-        tree.setRoot(new SequenceNode<SquadBTData>(
-            tree.init(new CheckEnemyIsAttackable()),
-            tree.init(new TaskFireTowardsEnemy())
+        tree.setRoot(new AllNode<SquadBTData>(
+            tree.init(new SequenceNode<SquadBTData>(
+                tree.init(new SoldierCheckEnemyIsAttackable()),
+                tree.init(new TaskFireTowardsEnemy())
+            ))
+            // tree.init(new SequenceNode<SquadBTData>(
+            //     tree.init(new CanTakeCover()),
+            //     tree.init(new TaskFindCover()),
+            //     tree.init(new MoveToCover())
+            // ))
         ));
         return tree;
     }

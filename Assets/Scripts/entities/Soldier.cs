@@ -13,6 +13,9 @@ public class Soldier: MonoBehaviour, GameUnit{
     public HpBar hpBar;
     public EntityStat stat = new EntityStat();
 
+    [Header("Ammo")]
+    public float bulletSpeed = 10;
+
     private Squad ownSquad;
     private AiNavigator agent;
     private CombatManager combatManager;
@@ -58,7 +61,7 @@ public class Soldier: MonoBehaviour, GameUnit{
 #endif
 
     private void shoot(){
-        WeaponSuite.bullet(this, (target.getTransform().position - transform.position).normalized);
+        WeaponSuite.bullet(this, (target.getTransform().position - transform.position).normalized, bulletSpeed);
     }
 
     public void onDie(){
@@ -102,6 +105,9 @@ public class Soldier: MonoBehaviour, GameUnit{
     }
     public void resetStoppingDistance(){
         agent.resetStoppingDistance();
+    }
+    public void setStoppingDistance(float dist){
+        agent.setStoppingDistance(dist);
     }
 
     public Vector3 getHeadingToPos(){

@@ -392,6 +392,7 @@ MonoBehaviour:
     maxHealth: 1000
     damage: 50
     defense: 0
+  bulletSpeed: 10
 --- !u!1 &8153605238616527184
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,9 @@ TagManager:
   tags:
   - singletons
   - coverspot
+  - PlayerController
+  - EnemyController
+  - AllyController
   layers:
   - Default
   - TransparentFX

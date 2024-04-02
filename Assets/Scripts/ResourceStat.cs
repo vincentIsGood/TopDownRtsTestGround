@@ -35,3 +35,7 @@ public class ResourceStat{
         food = Mathf.Min(food + amount.food, maxFood);
     }
 }
+
+public enum ResourceType{
+    Food, Iron, Oil
+}

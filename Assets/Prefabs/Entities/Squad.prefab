@@ -56,14 +56,15 @@ MonoBehaviour:
     coverMask:
       serializedVersion: 2
       m_Bits: 512
-    enterRadius: 1
-    findRange: 3
-    chaseRange: 3
+    enterRadius: 1.5
+    findRange: 4
+    chaseRange: 2
     attackRange: 8
     attackSpeedSec: 1.5
     separation: 2
     cohesion: 1.3
     targetMode: 0
+    enableAi: 1
 --- !u!114 &4373700647299046170
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ public class TaskFindCover: BehaviorTreeNode<SquadBTData>{
         for(int i = 0; i < hitCount; i++){
             Cover cover = colliders[i].transform.GetComponent<Cover>();
             if(cover == null) continue;
-            sharedData.squad.moveToPos(cover.transform.position, cover);
+            sharedData.moveToCover = cover;
             return state = NodeState.SUCCESS;
         }
         return state = NodeState.FAILURE;

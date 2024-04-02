@@ -9,7 +9,9 @@ public class Squad: MonoBehaviour{
 
     [NonSerialized] public GamePlayer player;
     [NonSerialized] public Vector3 center;
+    [NonSerialized] public Vector3 destCenter;
     [NonSerialized] public int originalAmount;
+    [NonSerialized] public bool engaging = false;
 
     private bool insideBuilding;
     private Action enterAction;
@@ -19,10 +21,15 @@ public class Squad: MonoBehaviour{
     private TargetSolver targetSolver;
 
     [NonSerialized] public Transform targetPos;
+    public List<Squad> canSeeEnemies = new List<Squad>();
+    public List<GameBuilding> canSeeEnemyBuildings = new List<GameBuilding>();
+
     private List<GameUnit> members;
     private TargetPosIndicator targetPosIndicator;
     private Vector3 headingToPos;
     private HashSet<GameObject> excludeFromView = new HashSet<GameObject>();
+
+    private IntervalActionUtils intervalCaller;
 
     private CoverSide cover;
     private Squad targetSquad;
@@ -33,6 +40,8 @@ public class Squad: MonoBehaviour{
         members = GetComponentsInChildren<GameUnit>().ToList();
         targetPosIndicator = GetComponentInChildren<TargetPosIndicator>();
         targetPos = targetPosIndicator.transform;
+
+        intervalCaller = new IntervalActionUtils(updateNearbyEnemies, 1.5f);
 
         originalAmount = members.Count;
         config.assign(this);
@@ -48,7 +57,10 @@ public class Squad: MonoBehaviour{
     }
 
     void Update(){
+        intervalCaller.tick();
         center = findCenter();
+        destCenter = findDestCenter();
+        engaging = members.Any(m => m.getTarget() != null);
 
         if(enterAction != null && Vector3.Distance(center, headingToPos) < config.enterRadius){
             enterAction?.Invoke();
@@ -56,15 +68,32 @@ public class Squad: MonoBehaviour{
         }
     }
 
-#if UNITY_EDITOR
+    private Collider2D[] colliders = new Collider2D[5];
+    private void updateNearbyEnemies(){
+        canSeeEnemies.Clear();
+        canSeeEnemyBuildings.Clear();
+        int hitCount = Physics2D.OverlapCircleNonAlloc(center, config.findRange, colliders, config.enemyMask);
+        for(int i = 0; i < hitCount; i++){
+            if(colliders[i].TryGetComponent(out GameUnit unit)){
+                if(unit is GameBuilding building){
+                    canSeeEnemyBuildings.Add(building);
+                }else{
+                    canSeeEnemies.Add(unit.getOwnSquad());
+                }
+            }
+        }
+    }
 
+#if UNITY_EDITOR
     void OnDrawGizmos(){
         if(!EditorApplication.isPlaying) return;
         Handles.color = Color.black;
         Handles.DrawWireDisc(center, Vector3.forward, 0.1f);
+        // Handles.DrawWireDisc(center, Vector3.forward, config.findRange);
         Handles.color = Color.yellow;
         foreach(GameUnit unit in members)
             Handles.DrawWireDisc(unit.getHeadingToPos(), Vector3.forward, 0.2f);
+        Handles.DrawWireDisc(destCenter, Vector3.forward, 0.1f);
 
         Handles.color = Color.green;
         foreach(GameUnit enemy in targetSolver.targetedEnemies){
@@ -170,7 +199,7 @@ public class Squad: MonoBehaviour{
 
         formation.updateMembersLocalPos();
         foreach(GameUnit member in members){
-            member.attackOnSight(targetSolver.assignTargetFrom(squad, member, false));
+            member.attackOnSight(targetSolver.assignTargetFrom(squad, member));
         }
     }
     public void fireTowards(GameUnit unit){
@@ -197,6 +226,16 @@ public class Squad: MonoBehaviour{
 
         formation.updateMembersLocalPos();
     }
+    public void setStoppingDistance(float dist){
+        foreach(GameUnit member in members){
+            member.setStoppingDistance(dist);
+        }
+    }
+    public void resetStoppingDistance(){
+        foreach(GameUnit member in members){
+            member.resetStoppingDistance();
+        }
+    }
     
     public void leaveCover(){
         foreach(GameUnit member in members){
@@ -206,10 +245,16 @@ public class Squad: MonoBehaviour{
     }
 
     public Vector3 findCenter(){
-
         Vector3 result = Vector3.zero;
         foreach(GameUnit member in members){
             result += member.getTransform().position;
+        }
+        return result / members.Count;
+    }
+    public Vector3 findDestCenter(){
+        Vector3 result = Vector3.zero;
+        foreach(GameUnit member in members){
+            result += member.getHeadingToPos();
         }
         return result / members.Count;
     }

@@ -18,21 +18,20 @@ public class GameBuilding: MonoBehaviour, GameUnit{
         isDestroyed = true;
     }
 
-    public void spawnSquad(SpawnOption option){
-        if(!owner.resourceStat.canAfford(option.cost)){
-            return;
+    public Squad spawnSquad(SpawnOption option){
+        if(!owner.resourceStat.canAfford(option.cost) || owner.squads.Count +1 > GameMap.instance.maxSquads){
+            return null;
         }
         owner.resourceStat.subtract(option.cost);
         
         Squad squad = Instantiate(
-            option.squadPrefab, transform.position, transform.rotation).GetComponent<Squad>();
+            option.squadPrefab, transform.position, Quaternion.identity).GetComponent<Squad>();
         squad.player = owner;
         squad.moveToPos(spawnRallyPoint.transform.position);
         configSquadForFaction(squad, owner);
         owner.addSquad(squad);
+        return squad;
     }
-
-    public void stopAtFireDistance(){}
 
     public void teleportToPos(Vector3 pos){}
 
@@ -104,7 +103,11 @@ public class GameBuilding: MonoBehaviour, GameUnit{
 
     public void onEnemyKilled(GameUnit enemy){}
 
+    public void stopAtFireDistance(){}
+
     public void resetStoppingDistance(){}
+
+    public void setStoppingDistance(float dist){}
 
     public void setTarget(GameUnit target){}
 }

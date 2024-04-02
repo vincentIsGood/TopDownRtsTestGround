@@ -1,16 +1,21 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class ResourcePoint: MonoBehaviour{
-    public ResourceStat resourceRewardPerTime;
+    [Header("Resource")]
+    public ResourceStat earningsPerTime;
+    public ResourceType type;
+
+    [Header("Capture Config")]
     public float captureRadius = 1.8f;
     public float captureTimeSec = 60;
     private LayerMask playersMask;
 
-    private GamePlayer capturer = null;
-    private GamePlayer capturing = null;
-    private bool tie;
+    [NonSerialized] public GamePlayer capturer = null;
+    [NonSerialized] public GamePlayer capturing = null;
+    [NonSerialized] public bool tie;
     private IntervalActionUtils resGenerationCounter;
     private float startCapTimeSec = -1;
 
@@ -45,6 +50,7 @@ public class ResourcePoint: MonoBehaviour{
         }
     }
 
+#if UNITY_EDITOR
     void OnDrawGizmos(){
         Handles.color = getCurrentColor();
         if(startCapTimeSec != -1){
@@ -67,6 +73,7 @@ public class ResourcePoint: MonoBehaviour{
         }
         return resultColor;
     }
+#endif
 
     private GamePlayer findLargestPortionOfFaction(){
         if(hitCount == 0) return null;
@@ -103,6 +110,6 @@ public class ResourcePoint: MonoBehaviour{
 
     private void giveResourceToCapturer(){
         if(capturer == null) return;
-        capturer.resourceStat.add(resourceRewardPerTime);
+        capturer.resourceStat.add(earningsPerTime);
     }
 }

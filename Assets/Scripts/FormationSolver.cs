@@ -43,17 +43,21 @@ public class FormationSolver{
     }
 
     public Vector3 calcLocalPos(GameUnit member, Vector3 squadCenter){
+        List<GameUnit> units = ownSquad.getUnits();
+        if(units.Count == 1){
+            return Vector3.zero;
+        }
 
         Vector3 separationForce = Vector3.zero;
-        foreach(GameUnit other in ownSquad.getUnits()){
+        foreach(GameUnit other in units){
             float dist = Vector3.Distance(member.getTransform().position, other.getTransform().position);
             if(dist != 0){
                 Vector3 diff = member.getTransform().position - other.getTransform().position;
                 separationForce += diff.normalized / dist;
             }
         }
-        if(ownSquad.getUnits().Count-1 > 0){
-            separationForce /= ownSquad.getUnits().Count-1;
+        if(units.Count-1 > 0){
+            separationForce /= units.Count-1;
         }
 
 

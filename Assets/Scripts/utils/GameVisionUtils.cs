@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameVisionUtils{
     public static float maxVisionLength = 10;
 
-    private static RaycastHit2D[] hits = new RaycastHit2D[5];
+    private static RaycastHit2D[] hits = new RaycastHit2D[8];
     private static HashSet<GameObject> emptyExclude = new HashSet<GameObject>();
 
     public static bool canSeeTarget(GameUnit from, GameUnit to, HashSet<GameObject> exclude = null){
@@ -24,7 +25,7 @@ public class GameVisionUtils{
         for(int i = 0; i < hitCount; i++){
             hit = hits[i];
             if(exclude.Contains(hit.collider.gameObject)) continue;
-            if(isWallHit(hit.collider, from.getOwnSquad().config.wallMask))
+            if(checkMask(hit.collider, from.getOwnSquad().config.wallMask))
                 return false;
             if(hit.collider.TryGetComponent(out GameUnit _)){
                 return true;
@@ -51,7 +52,7 @@ public class GameVisionUtils{
         for(int i = 0; i < hitCount; i++){
             hit = hits[i];
             if(exclude.Contains(hit.collider.gameObject)) continue;
-            if(isWallHit(hit.collider, from.config.wallMask))
+            if(checkMask(hit.collider, from.config.wallMask))
                 return false;
             if(anyHitOnUnitOrSquad(hit.collider)){
                 return true;
@@ -60,11 +61,21 @@ public class GameVisionUtils{
         return false;
     }
 
+    public static void loopThroughVisibleTargetsFromPoint(Vector3 point, Collider2D[] targets, int length, int allMask, int wallMask, Action<Collider2D> action){
+        for(int i = 0; i < length; i++){
+            Collider2D target = targets[i];
+            if(Physics2D.Raycast(point, (target.transform.position - point).normalized, Vector2.Distance(point, target.transform.position), allMask)){
+                if(checkMask(target, wallMask)) continue;
+                action?.Invoke(target);
+            }
+        }
+    }
+
     private static void sortHits(RaycastHit2D[] hits, int length){
         System.Array.Sort(hits, 0, length, RaycastDistComparer.instance);
     }
 
-    private static bool isWallHit(Collider2D collider, int mask){
+    private static bool checkMask(Collider2D collider, int mask){
         return ((1 << collider.gameObject.layer) & mask) > 0;
     }
 

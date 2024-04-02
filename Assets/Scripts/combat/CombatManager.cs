@@ -11,7 +11,7 @@ public class CombatManager{
         EntityStat attackerStat = attacker.getStat();
         EntityStat enemyStat = enemy.getStat();
 
-        enemyStat.takeDamage(enemyStat.damage);
+        enemyStat.takeDamage(attackerStat.damage);
 
         if(enemyStat.health <= 0){
             enemy.onDie();

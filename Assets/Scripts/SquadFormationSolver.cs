@@ -21,6 +21,9 @@ public class SquadFormationSolver{
     }
 
     public Vector3 calcLocalPos(Squad squad, List<Squad> selectedSquads, Vector3 center){
+        if(selectedSquads.Count == 1){
+            return Vector3.zero;
+        }
 
         Vector3 separationForce = Vector3.zero;
         foreach(Squad other in selectedSquads){

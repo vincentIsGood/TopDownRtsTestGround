@@ -11,17 +11,20 @@ public class DebugMsgPanel: MonoBehaviour{
         if(instance == null) instance = this;
     }
 
-    public void showStats(ResourceStat player, ResourceStat enemy){
+    public void showStats(GamePlayer player, GamePlayer enemy){
         string finalText = 
 $@"Player Resources:
-Oil: {player.oil}
-Iron: {player.iron}
-Food: {player.food}
+Oil: {player.resourceStat.oil}
+Iron: {player.resourceStat.iron}
+Food: {player.resourceStat.food}
+Squads: {player.squads.Count}/{GameMap.instance.maxSquads}
 
 Enemy Resources:
-Oil: {enemy.oil}
-Iron: {enemy.iron}
-Food: {enemy.food}";
+Oil: {enemy.resourceStat.oil}
+Iron: {enemy.resourceStat.iron}
+Food: {enemy.resourceStat.food}
+Squads: {enemy.squads.Count}/{GameMap.instance.maxSquads}";
+
         text.text = finalText;
     }
 }

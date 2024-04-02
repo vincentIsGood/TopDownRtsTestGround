@@ -11,6 +11,10 @@ public class TankUnit: MonoBehaviour, GameUnit{
     [NonSerialized] public AiNavigator agent;
     [NonSerialized] public Squad ownSquad;
 
+    [Header("Ammo")]
+    public float bulletSpeed = 10;
+    public float impactRadius = 1f;
+
     private GameUnit target = null;
     private Vector3 headingToPos;
 
@@ -61,7 +65,7 @@ public class TankUnit: MonoBehaviour, GameUnit{
     }
 #endif
     private void shoot(){
-        WeaponSuite.antiTankBullet(this, (target.getTransform().position - transform.position).normalized);
+        WeaponSuite.tankAmmo(this, (target.getTransform().position - transform.position).normalized, bulletSpeed, impactRadius);
     }
     private void resetTurretAngle(){
         turretObject.rotation = Quaternion.Lerp(turretObject.rotation, transform.rotation, Time.deltaTime * 10);
@@ -114,6 +118,9 @@ public class TankUnit: MonoBehaviour, GameUnit{
     }
     public void resetStoppingDistance(){
         agent.resetStoppingDistance();
+    }
+    public void setStoppingDistance(float dist){
+        agent.setStoppingDistance(dist);
     }
 
     public Vector3 getHeadingToPos(){

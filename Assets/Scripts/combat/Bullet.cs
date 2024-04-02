@@ -1,12 +1,13 @@
+using System;
 using UnityEngine;
 
 public class Bullet: MonoBehaviour{
-    public float speed = 10;
-    public GameUnit owner;
-    public Vector3 forward;
-
     public BulletType type = BulletType.NORMAL;
-    
+    [NonSerialized] public float speed = 10;
+
+    [NonSerialized] public GameUnit owner;
+    [NonSerialized] public Vector3 forward;
+
     private Rigidbody2D rb;
 
     void Start(){
@@ -18,11 +19,16 @@ public class Bullet: MonoBehaviour{
         rb.velocity = forward * speed;
     }
 
-    void OnTriggerEnter2D(Collider2D collider){
+    public virtual void OnTriggerEnter2D(Collider2D collider){
         int layerMask = owner.getOwnSquad().config.enemyMask | owner.getOwnSquad().config.wallMask;
         if(owner.getOwnSquad().isExcludedFromView(collider.gameObject)) return;
         if((1 << collider.gameObject.layer & layerMask) == 0) return;
         
+        dealDamageToEnemy(collider);
+        Destroy(this.gameObject);
+    }
+
+    protected void dealDamageToEnemy(Collider2D collider){
         CombatManager combatManager = owner.getCombatManager();
         if(collider.TryGetComponent(out GameBuilding building)){
             combatManager.attack(building);
@@ -34,7 +40,6 @@ public class Bullet: MonoBehaviour{
                 combatManager.attack(unit);
             }
         }
-        Destroy(this.gameObject);
     }
 }
 

@@ -25,7 +25,7 @@ public class GuardsBehaviorTree : MonoBehaviour{
         BehaviorTree<SquadBTData> tree = new BehaviorTree<SquadBTData>(squad.config);
         tree.setRoot(new SelectorNode<SquadBTData>(
             tree.init(new SequenceNode<SquadBTData>(
-                tree.init(new CheckEnemyIsAttackable()),
+                tree.init(new SoldierCheckEnemyIsAttackable()),
                 tree.init(new SelectorNode<SquadBTData>(
                     tree.init(new SequenceNode<SquadBTData>(
                         tree.init(new TaskFindCover()),

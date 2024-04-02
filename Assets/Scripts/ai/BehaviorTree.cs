@@ -122,4 +122,20 @@ public class SelectorNode<T>: BehaviorTreeNode<T>{
     }
 }
 
+public class AllNode<T>: BehaviorTreeNode<T>{
+    public AllNode(): base(){
+    }
+    public AllNode(List<BehaviorTreeNode<T>> children): base(children){
+    }
+    public AllNode(params BehaviorTreeNode<T>[] children): base(children){
+    }
+
+    public override NodeState evaluate(){
+        foreach(BehaviorTreeNode<T> child in children){
+            child.evaluate();
+        }
+        return NodeState.SUCCESS;
+    }
+}
+
 }

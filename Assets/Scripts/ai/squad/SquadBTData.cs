@@ -10,10 +10,10 @@ public class SquadBTData{
     public LayerMask coverMask;
 
     [Header("Ranges")]
-    public float enterRadius = 1f;
-    public float findRange = 2;
-    public float chaseRange = 4;
-    public float attackRange = 4;
+    public float enterRadius = 1.5f;
+    public float findRange = 4;
+    public float chaseRange = 2;
+    public float attackRange = 8;
 
     [Header("Cooldowns")]
     public float attackSpeedSec = 1.5f;
@@ -25,9 +25,14 @@ public class SquadBTData{
     [Header("Target Solver")]
     public TargetMode targetMode = TargetMode.Closest;
 
+    [Header("AI")]
+    public bool enableAi = true;
+    public bool allowAiMovement = true;
+
     [NonSerialized] public Squad squad;
-    [NonSerialized] public Squad target;
-    [NonSerialized] public GameUnit targetUnit;
+    public Squad target;
+    public GameUnit targetUnit;
+    public Cover moveToCover;
 
     public void assign(Squad squad){
         this.squad = squad;
