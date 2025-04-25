@@ -5,13 +5,13 @@ using UnityEngine;
 public class FindNextMovePoint: BehaviorTreeNode<CommanderBTData>{
     public override NodeState evaluate(){
         if(canGoToResourcePoint(ResourceType.Food, out tree.sharedData.moveToTargetPos)){
-            Debug.Log($"[{tree.sharedData.self.name}] Going to res pt: Food");
+            // Debug.Log($"[{tree.sharedData.self.name}] Going to res pt: Food");
             return NodeState.SUCCESS;
         }else if(canGoToResourcePoint(ResourceType.Iron, out tree.sharedData.moveToTargetPos)){
-            Debug.Log($"[{tree.sharedData.self.name}] Going to res pt: Iron");
+            // Debug.Log($"[{tree.sharedData.self.name}] Going to res pt: Iron");
             return NodeState.SUCCESS;
         }else if(canGoToResourcePoint(ResourceType.Oil, out tree.sharedData.moveToTargetPos)){
-            Debug.Log($"[{tree.sharedData.self.name}] Going to res pt: Oil");
+            // Debug.Log($"[{tree.sharedData.self.name}] Going to res pt: Oil");
             return NodeState.SUCCESS;
         }
 
@@ -30,7 +30,7 @@ public class FindNextMovePoint: BehaviorTreeNode<CommanderBTData>{
             if(diff < tree.sharedData.idealInfluence && Random.value < 0.5f){
                 if(diff < (tree.sharedData.selectedSquadSumInfluence - tree.sharedData.fearInfluence) 
                 && Random.value < (1-tree.sharedData.braveryProb)){
-                    Debug.Log($"[{tree.sharedData.self.name}] Ignore feared zone ({zoneInfluence.Value.name}): {diff}");
+                    // Debug.Log($"[{tree.sharedData.self.name}] Ignore feared zone ({zoneInfluence.Value.name}): {diff}");
                     continue;
                 }
                 finalResult = zoneInfluence.Value;
@@ -39,7 +39,7 @@ public class FindNextMovePoint: BehaviorTreeNode<CommanderBTData>{
             }
         }
         if(finalResult != null){
-            Debug.Log($"[{tree.sharedData.self.name}] Going to influence pt: {finalResult.name} (diff: {finalResult.diff})");
+            // Debug.Log($"[{tree.sharedData.self.name}] Going to influence pt: {finalResult.name} (diff: {finalResult.diff})");
             tree.sharedData.moveToTargetPosInfluence = finalResult;
             return true;
         }
@@ -55,7 +55,7 @@ public class FindNextMovePoint: BehaviorTreeNode<CommanderBTData>{
             }
         }
         if(finalResult != null){
-            Debug.Log($"[{tree.sharedData.self.name}] Escaping to influence pt: {finalResult.name} (diff: {finalResult.diff})");
+            // Debug.Log($"[{tree.sharedData.self.name}] Escaping to influence pt: {finalResult.name} (diff: {finalResult.diff})");
             tree.sharedData.moveToTargetPosInfluence = finalResult;
             return true;
         }

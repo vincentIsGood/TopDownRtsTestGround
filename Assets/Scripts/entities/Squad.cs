@@ -11,7 +11,9 @@ public class Squad: MonoBehaviour{
     [NonSerialized] public Vector3 center;
     [NonSerialized] public Vector3 destCenter;
     [NonSerialized] public int originalAmount;
+    [NonSerialized] public Type unitType;
     [NonSerialized] public bool engaging = false;
+    [NonSerialized] public int xp = 0;
 
     private bool insideBuilding;
     private Action enterAction;
@@ -21,8 +23,8 @@ public class Squad: MonoBehaviour{
     private TargetSolver targetSolver;
 
     [NonSerialized] public Transform targetPos;
-    public List<Squad> canSeeEnemies = new List<Squad>();
-    public List<GameBuilding> canSeeEnemyBuildings = new List<GameBuilding>();
+    [NonSerialized] public List<Squad> canSeeEnemies = new List<Squad>();
+    [NonSerialized] public List<GameBuilding> canSeeEnemyBuildings = new List<GameBuilding>();
 
     private List<GameUnit> members;
     private TargetPosIndicator targetPosIndicator;
@@ -44,6 +46,7 @@ public class Squad: MonoBehaviour{
         intervalCaller = new IntervalActionUtils(updateNearbyEnemies, 1.5f);
 
         originalAmount = members.Count;
+        unitType = members[0].GetType();
         config.assign(this);
     }
     void Start(){
@@ -52,6 +55,11 @@ public class Squad: MonoBehaviour{
     private void initMembers(){
         foreach(GameUnit member in members){
             member.getTransform().position = transform.position + RandomUtils.randomWithNeg(0.1f, 0.1f, 0);
+
+            // if(player.isAlly && member is Soldier){
+            //     Color currentColor = member.getOwner().GetComponent<SpriteRenderer>().color;
+            //     member.getOwner().GetComponent<SpriteRenderer>().color = Color.Lerp(currentColor, Color.blue, 0.6f);
+            // }
         }
         formation.updateMembersLocalPos();
     }
@@ -120,9 +128,13 @@ public class Squad: MonoBehaviour{
     public void onEnemyKilled(GameUnit attacker, GameUnit enemy){
         targetSolver.clearTargetFor(attacker);
         fireTowards(enemy.getOwnSquad());
+        xp += enemy.getStat().xpReward;
     }
     public void onBuildingDestroyed(GameUnit attacker, GameBuilding building){
         targetSolver.clearTargetFor(attacker);
+    }
+    public void onAnyUnitTakeDamage(GameUnit member){
+        
     }
 
     public void moveToPos(Vector3 pos){
@@ -151,12 +163,12 @@ public class Squad: MonoBehaviour{
         moveToPosReset(pos);
         if(!house.canEnter(this))
             return;
-        
+
         if(members[0] is not Soldier){
             moveToPos(pos);
             return;
         }
-        
+
         headingToPos = house.getEntrancePos();
         enterAction = ()=>{
             if(!house.canEnter(this))
@@ -212,7 +224,7 @@ public class Squad: MonoBehaviour{
         targetPos.position = pos;
         targetSolver.clearSquadTargets();
         targetSquad = null;
-        
+
         if(exitAction != null && insideBuilding){
             exitAction?.Invoke();
             exitAction = null;
@@ -236,7 +248,7 @@ public class Squad: MonoBehaviour{
             member.resetStoppingDistance();
         }
     }
-    
+
     public void leaveCover(){
         foreach(GameUnit member in members){
             if(member is Soldier soldier)
@@ -269,6 +281,11 @@ public class Squad: MonoBehaviour{
     public List<GameUnit> getUnits(){
         return members;
     }
+
+    public Type getUnitType(){
+        return unitType;
+    }
+
     public bool isMoving(){
         return members.Any(member => member.getAgent().isMoving());
     }

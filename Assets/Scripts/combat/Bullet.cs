@@ -23,7 +23,7 @@ public class Bullet: MonoBehaviour{
         int layerMask = owner.getOwnSquad().config.enemyMask | owner.getOwnSquad().config.wallMask;
         if(owner.getOwnSquad().isExcludedFromView(collider.gameObject)) return;
         if((1 << collider.gameObject.layer & layerMask) == 0) return;
-        
+
         dealDamageToEnemy(collider);
         Destroy(this.gameObject);
     }

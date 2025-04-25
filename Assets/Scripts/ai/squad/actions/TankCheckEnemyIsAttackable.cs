@@ -11,12 +11,18 @@ public class TankCheckEnemyIsAttackable: BehaviorTreeNode<SquadBTData>{
 
     private Dictionary<Type, List<GameUnit>> sawUnits;
 
+    private List<Type> targetPriority = new List<Type>(){
+        typeof(LightTankUnit),
+        typeof(HeavyTankUnit),
+        typeof(Soldier),
+    };
+
     public override NodeState evaluate(){
         SquadBTData sharedData = tree.sharedData;
         if(sawUnits == null){
             sawUnits = new Dictionary<Type, List<GameUnit>>();
-            sawUnits[typeof(TankUnit)] = new List<GameUnit>();
-            sawUnits[typeof(Soldier)] = new List<GameUnit>();
+            foreach(Type unitType in UnitTypes.getAllUnitTypes())
+                sawUnits[unitType] = new List<GameUnit>();
         }
 
         int hitCount = Physics2D.OverlapCircleNonAlloc(
@@ -36,13 +42,11 @@ public class TankCheckEnemyIsAttackable: BehaviorTreeNode<SquadBTData>{
             }
         }
 
-        if(sawUnits[typeof(TankUnit)].Count > 0){
-            sharedData.target = sawUnits[typeof(TankUnit)][0].getOwnSquad();
-            return state = NodeState.SUCCESS;
-        }
-        if(sawUnits[typeof(Soldier)].Count > 0){
-            sharedData.target = sawUnits[typeof(Soldier)][0].getOwnSquad();
-            return state = NodeState.SUCCESS;
+        foreach(Type priorityType in targetPriority){
+            if(sawUnits[priorityType].Count > 0){
+                sharedData.target = sawUnits[priorityType][0].getOwnSquad();
+                return state = NodeState.SUCCESS;
+            }
         }
 
         if(lowlyPrioritizedUnit != null){

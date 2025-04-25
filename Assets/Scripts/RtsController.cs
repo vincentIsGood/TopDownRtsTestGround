@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [DefaultExecutionOrder(0)]
 [RequireComponent(typeof(GamePlayer))]
@@ -12,10 +13,12 @@ public class RtsController: MonoBehaviour{
 
     [Header("Debug")]
     public List<Squad> selectedSquads = new List<Squad>();
+    public Squad uniquelySelectedSquad;
 
     private CommanderBehaviorTree commanderAi;
     private GameObject selectionBox;
     private UnitsSelector unitsSelector;
+    private BuildingSelector buildingSelector = new BuildingSelector();
 
     void Awake(){
         player = GetComponent<GamePlayer>();
@@ -60,6 +63,7 @@ public class RtsController: MonoBehaviour{
                 }else if(hitInfos[0].collider.TryGetComponent(out GameBuilding building)){
                     moveToPos(targetPos);
                 }else if(hitInfos[0].collider.TryGetComponent(out GameUnit unit)){
+                    // Debug.Log("Targeting: " + unit.getOwner().name);
                     foreach(Squad squad in selectedSquads){
                         squad.moveToPos(targetPos, unit.getOwnSquad());
                     }
@@ -74,31 +78,44 @@ public class RtsController: MonoBehaviour{
         }
     }
 
-    private bool clicked = false;
+    private bool clickDrag = false;
     private Vector3 clickAnchorPos;
     public void leftClick(){
-        if(Input.GetMouseButton(0)){
-            clearSelectedSquadsAndPos();
+        if(EventSystem.current.IsPointerOverGameObject()){
+            if(clickDrag){
+                leftClickButtonUp();
+            }
+            return;
+        }
 
+        if(Input.GetMouseButton(0)){
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            if(!clicked){
+
+            if(buildingSelector.leftClickOnBuilding(mousePos)){
+                return;
+            }else clearSelectedSquadsAndPos();
+
+            if(!clickDrag){
                 selectionBox.SetActive(true);
                 selectionBox.transform.position = mousePos;
                 selectionBox.transform.localScale = Vector3.zero;
-                clicked = true;
+                clickDrag = true;
                 clickAnchorPos = mousePos;
                 return;
             }
             selectionBox.transform.localScale = mousePos - clickAnchorPos;
         }else if(Input.GetMouseButtonUp(0)){
-            clicked = false;
-            selectedSquads = unitsSelector.getSelectedSquads();
-            player.formationSolver.clearLocalPos();
-            player.formationSolver.updateMembersLocalPos(selectedSquads);
-            
-            selectionBox.SetActive(false);
+            leftClickButtonUp();
         }
+    }
+    private void leftClickButtonUp(){
+        clickDrag = false;
+        selectedSquads = unitsSelector.getSelectedSquads();
+        player.formationSolver.clearLocalPos();
+        player.formationSolver.updateMembersLocalPos(selectedSquads);
+
+        selectionBox.SetActive(false);
     }
 
     public void clearSelectedSquadsAndPos(){
@@ -109,6 +126,8 @@ public class RtsController: MonoBehaviour{
                 selectedSquads.RemoveAt(i);
             }
         }
+        buildingSelector.clearSelection();
+
         player.formationSolver.clearLocalPos();
         player.formationSolver.updateMembersLocalPos(selectedSquads);
     }

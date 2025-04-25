@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,9 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AiNavigator : MonoBehaviour{
+    [NonSerialized]
+    public float offsetRotZ = 0;
+
     [SerializeField] 
     private Transform target;
     private float stoppingDistance = 1;
@@ -57,7 +61,7 @@ public class AiNavigator : MonoBehaviour{
 
     public void faceTarget(){
         if(agent.velocity.magnitude > 0.1f)
-            transform.rotation = Quaternion.AngleAxis(findAngle(agent.velocity.normalized), Vector3.forward);
+            transform.rotation = Quaternion.AngleAxis(findAngle(agent.velocity.normalized) + offsetRotZ, Vector3.forward);
     }
 
     public void disable(){

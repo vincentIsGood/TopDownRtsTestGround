@@ -3,9 +3,10 @@ using UnityEditor;
 using UnityEngine;
 
 public class TankFactory: GameBuilding{
-    void Awake(){
+    void Start(){
         spawnOptions = new List<SpawnOption>(){
-            AssetDatabase.LoadAssetAtPath<SpawnOption>("Assets/Config/Spawn/TankSquad.asset"),
+            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/LightTankSquad.asset"),
+            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/HeavyTankSquad.asset"),
         };
     }
 
@@ -27,8 +28,13 @@ public class TankFactory: GameBuilding{
         owner.addBuilding(this);
     }
     
-    [ContextMenu("Spawn/Tank")]
-    public Squad spawnTank(){
+    [ContextMenu("Spawn/Light Tank")]
+    public Squad spawnLightTank(){
         return spawnSquad(spawnOptions[0]);
+    }
+    
+    [ContextMenu("Spawn/Heavy Tank")]
+    public Squad spawnHeavyTank(){
+        return spawnSquad(spawnOptions[1]);
     }
 }

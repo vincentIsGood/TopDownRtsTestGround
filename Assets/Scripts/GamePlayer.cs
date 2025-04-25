@@ -6,6 +6,7 @@ using UnityEngine;
 public class GamePlayer: MonoBehaviour{
     public string playerName;
     public bool isAlly = true;
+    public GameCountries country = GameCountries.German;
     [NonSerialized] public GameTeam ownTeam;
     [NonSerialized] public GameTeam enemyTeam;
 
@@ -15,11 +16,15 @@ public class GamePlayer: MonoBehaviour{
     [NonSerialized] public Vector3 center;
     [NonSerialized] public HashSet<GameBuilding> buildings = new HashSet<GameBuilding>();
     [NonSerialized] public List<Squad> squads = new List<Squad>();
+    [NonSerialized] public Dictionary<Type, int> unitTypeToAmount = new Dictionary<Type, int>();
     [NonSerialized] public SquadFormationSolver formationSolver = new SquadFormationSolver();
     [NonSerialized] public RtsController controller;
 
     void Awake(){
         commanderConfig.assign(this);
+        foreach(Type unitType in UnitTypes.getAllUnitTypes()){
+            unitTypeToAmount[unitType] = 0;
+        }
     }
 
     void Update(){
@@ -28,9 +33,11 @@ public class GamePlayer: MonoBehaviour{
 
     public void addSquad(Squad squad){
         squads.Add(squad);
+        unitTypeToAmount[squad.getUnitType()]++;
     }
     public void removeSquad(Squad squad){
         squads.Remove(squad);
+        unitTypeToAmount[squad.getUnitType()]--;
         controller?.clearSelectedSquadsAndPos();
     }
 

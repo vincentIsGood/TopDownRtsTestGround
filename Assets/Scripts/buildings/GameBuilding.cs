@@ -19,6 +19,7 @@ public class GameBuilding: MonoBehaviour, GameUnit{
     }
 
     public Squad spawnSquad(SpawnOption option){
+        if(!owner || !option) return null;
         if(!owner.resourceStat.canAfford(option.cost) || owner.squads.Count +1 > GameMap.instance.maxSquads){
             return null;
         }
@@ -32,9 +33,6 @@ public class GameBuilding: MonoBehaviour, GameUnit{
         owner.addSquad(squad);
         return squad;
     }
-
-    public void teleportToPos(Vector3 pos){}
-
     private void configSquadForFaction(Squad squad, GamePlayer owner){
         if(owner.isAlly){
             int allyLayer = LayerMask.NameToLayer("Ally");
@@ -52,6 +50,8 @@ public class GameBuilding: MonoBehaviour, GameUnit{
             }
         }
     }
+
+    public void teleportToPos(Vector3 pos){}
 
     public void attackAndMove(GameUnit target){}
 

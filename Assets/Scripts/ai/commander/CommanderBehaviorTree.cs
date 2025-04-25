@@ -32,12 +32,8 @@ public class CommanderBehaviorTree : MonoBehaviour{
                     tree.init(new WalkToPoint())
                 )),
                 tree.init(new SequenceNode<CommanderBTData>(
-                    tree.init(new CanCreateTankUnit()),
-                    tree.init(new CreateTank())
-                )),
-                tree.init(new SequenceNode<CommanderBTData>(
-                    tree.init(new CanCreateSoldier()),
-                    tree.init(new CreateInfantry())
+                    tree.init(new PrioritizeNextUnitToBeCreated()),
+                    tree.init(new CreateRequestedUnit())
                 ))
             ))
         ));

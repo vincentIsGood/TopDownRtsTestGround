@@ -9,8 +9,23 @@ public class EntityStat{
     public float maxHealth;
     public float damage;
     public float defense;
+    public int xpReward = 100;
 
     private HpBar hpBar;
+
+    public void add(EntityStat entityStat){
+        maxHealth += entityStat.maxHealth;
+        heal(entityStat.health);
+        damage += entityStat.damage;
+        defense += entityStat.defense;
+    }
+
+    public void sub(EntityStat entityStat){
+        maxHealth = Mathf.Max(maxHealth - entityStat.maxHealth, 0);
+        health = Mathf.Max(health - entityStat.health, 0);
+        damage = Mathf.Max(damage - entityStat.damage, 0);
+        defense = Mathf.Max(defense - entityStat.defense, 0);
+    }
 
     public void takeDamage(float damage, EntityStat effectScaler = null){
         if(effectScaler == null) effectScaler = identity;

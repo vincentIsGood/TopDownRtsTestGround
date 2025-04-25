@@ -12,6 +12,7 @@ public class CombatManager{
         EntityStat enemyStat = enemy.getStat();
 
         enemyStat.takeDamage(attackerStat.damage);
+        enemy.getOwnSquad().onAnyUnitTakeDamage(enemy);
 
         if(enemyStat.health <= 0){
             enemy.onDie();
@@ -27,6 +28,7 @@ public class CombatManager{
             Squad squad = RandomUtils.randomElement(house.squads);
             Soldier enemy = (Soldier)RandomUtils.randomElement(squad.getUnits());
             enemy.stat.takeDamage(attackerStat.damage, building.reductionStatScaler);
+            enemy.getOwnSquad().onAnyUnitTakeDamage(enemy);
             if(enemy.stat.health <= 0){
                 enemy.onDie();
                 attacker.onEnemyKilled(enemy);
@@ -36,6 +38,7 @@ public class CombatManager{
         if(buildingStat.health <= 0){
             building.onDestroyed();
             attacker.onBuildingDestroyed(building);
+            GameMap.instance.onBuildingDestroyed(building);
         }
     }
 }

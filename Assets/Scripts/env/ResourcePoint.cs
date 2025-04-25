@@ -24,9 +24,13 @@ public class ResourcePoint: MonoBehaviour{
     private Dictionary<GamePlayer, int> playersInside = new Dictionary<GamePlayer, int>();
     private HashSet<Squad> squadsInside = new HashSet<Squad>();
 
+    private SpriteRenderer spriteRenderer;
+
     void Awake(){
         playersMask = LayerMask.GetMask("Ally", "Enemy");
         resGenerationCounter = new IntervalActionUtils(giveResourceToCapturer, 10);
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update(){
@@ -48,11 +52,12 @@ public class ResourcePoint: MonoBehaviour{
             capturing = null;
             startCapTimeSec = -1;
         }
+        
+        colorChange();
     }
 
-#if UNITY_EDITOR
-    void OnDrawGizmos(){
-        Handles.color = getCurrentColor();
+    void colorChange(){
+        Color currentColor = getCurrentColor();
         if(startCapTimeSec != -1){
             Color newColor = Color.black;
             if(tie){
@@ -60,9 +65,11 @@ public class ResourcePoint: MonoBehaviour{
             }else if(capturing != null){
                 newColor = capturing.isAlly? Color.blue : Color.red;
             }
-            Handles.color = Color.Lerp(Handles.color, newColor, (Time.time - startCapTimeSec) / captureTimeSec);
+            Color finalColor = Color.Lerp(currentColor, newColor, (Time.time - startCapTimeSec) / captureTimeSec);
+            // currentColor = finalColor;
+            finalColor.a = 0.5f;
+            spriteRenderer.color = finalColor;
         }
-        Handles.DrawWireDisc(transform.position, Vector3.forward, captureRadius);
     }
     private Color getCurrentColor(){
         Color resultColor = Color.black;
@@ -73,7 +80,6 @@ public class ResourcePoint: MonoBehaviour{
         }
         return resultColor;
     }
-#endif
 
     private GamePlayer findLargestPortionOfFaction(){
         if(hitCount == 0) return null;

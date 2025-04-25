@@ -13,34 +13,40 @@ public class Soldier: MonoBehaviour, GameUnit{
     public HpBar hpBar;
     public EntityStat stat = new EntityStat();
 
-    [Header("Ammo")]
+    [Header("Combat")]
     public float bulletSpeed = 10;
+    public float attackSpeedSec = 1.5f;
 
-    private Squad ownSquad;
-    private AiNavigator agent;
-    private CombatManager combatManager;
+    protected Squad ownSquad;
+    protected AiNavigator agent;
+    protected CombatManager combatManager;
 
-    private GameUnit target = null;
-    private Vector3 headingToPos;
+    protected GameUnit target = null;
+    protected Vector3 headingToPos;
 
-    private bool dead = false;
-    private bool chaseTarget = false;
-    private IntervalActionUtils shootUpdater;
+    protected bool dead = false;
+    protected bool chaseTarget = false;
+    protected IntervalActionUtils shootUpdater;
+    
+    private Quaternion offsetRot;
 
     void Awake(){
         ownSquad = GetComponentInParent<Squad>();
         agent = GetComponent<AiNavigator>();
         combatManager = new CombatManager(this);
-        shootUpdater = new IntervalActionUtils(shoot, ownSquad.config.attackSpeedSec);
+        shootUpdater = new IntervalActionUtils(shoot, attackSpeedSec);
 
         stat.setHpBar(hpBar);
+
+        offsetRot = transform.rotation;
+        agent.offsetRotZ = offsetRot.eulerAngles.z;
     }
     void Update(){
         if(target != null && !target.isDead()){
             if(chaseTarget){
                 agent.moveTo(target.getTransform());
             }
-            if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit, ownSquad.getExcludeFromView()) 
+            if(GameVisionUtils.canSeeTarget(this, target, out RaycastHit2D hit, ownSquad.getExcludeFromView())
             && hit.distance < ownSquad.config.attackRange){
                 shootUpdater.tick();
             }else if(!chaseTarget){
@@ -60,7 +66,7 @@ public class Soldier: MonoBehaviour, GameUnit{
     }
 #endif
 
-    private void shoot(){
+    protected virtual void shoot(){
         WeaponSuite.bullet(this, (target.getTransform().position - transform.position).normalized, bulletSpeed);
     }
 

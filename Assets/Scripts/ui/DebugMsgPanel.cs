@@ -12,7 +12,7 @@ public class DebugMsgPanel: MonoBehaviour{
     }
 
     public void showStats(GamePlayer player, GamePlayer enemy){
-        string finalText = 
+        text.text = 
 $@"Player Resources:
 Oil: {player.resourceStat.oil}
 Iron: {player.resourceStat.iron}
@@ -24,7 +24,5 @@ Oil: {enemy.resourceStat.oil}
 Iron: {enemy.resourceStat.iron}
 Food: {enemy.resourceStat.food}
 Squads: {enemy.squads.Count}/{GameMap.instance.maxSquads}";
-
-        text.text = finalText;
     }
 }

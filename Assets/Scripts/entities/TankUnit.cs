@@ -11,9 +11,10 @@ public class TankUnit: MonoBehaviour, GameUnit{
     [NonSerialized] public AiNavigator agent;
     [NonSerialized] public Squad ownSquad;
 
-    [Header("Ammo")]
+    [Header("Combat")]
     public float bulletSpeed = 10;
     public float impactRadius = 1f;
+    public float attackSpeedSec = 1.5f;
 
     private GameUnit target = null;
     private Vector3 headingToPos;
@@ -25,13 +26,18 @@ public class TankUnit: MonoBehaviour, GameUnit{
     private IntervalActionUtils shootUpdater;
     private IntervalActionUtils turretAngleReseter;
 
+    private Quaternion offsetRot;
+
     void Awake(){
         combatManager = new CombatManager(this);
         agent = GetComponent<AiNavigator>();
         ownSquad = GetComponentInParent<Squad>();
         stat.setHpBar(hpBar);
-        shootUpdater = new IntervalActionUtils(shoot, ownSquad.config.attackSpeedSec);
+        shootUpdater = new IntervalActionUtils(shoot, attackSpeedSec);
         turretAngleReseter = new IntervalActionUtils(()=>canResetTurret = true, 15);
+
+        offsetRot = transform.rotation;
+        agent.offsetRotZ = offsetRot.eulerAngles.z;
     }
     void Update(){
         if(target != null && !target.isDead()){
@@ -68,15 +74,17 @@ public class TankUnit: MonoBehaviour, GameUnit{
         WeaponSuite.tankAmmo(this, (target.getTransform().position - transform.position).normalized, bulletSpeed, impactRadius);
     }
     private void resetTurretAngle(){
+        // transform is controlled by AiNavigator (rotation offset is already applied)
         turretObject.rotation = Quaternion.Lerp(turretObject.rotation, transform.rotation, Time.deltaTime * 10);
     }
     private void turretRotateTowardsEnemy(){
+        // absolute enemyDirection does not account for our rotation offset
         Vector3 enemyDirection = target.getTransform().position - transform.position;
         enemyDirection.z = 0;
         canResetTurret = false;
         turretObject.rotation = Quaternion.Lerp(
-            turretObject.rotation, 
-            Quaternion.FromToRotation(Vector3.up, enemyDirection), 
+            turretObject.rotation,
+            offsetRot * Quaternion.FromToRotation(Vector3.up, enemyDirection),
             Time.deltaTime * 10);
     }
 

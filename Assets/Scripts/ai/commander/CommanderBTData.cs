@@ -16,10 +16,16 @@ public class CommanderBTData{
     public float fearInfluence = 2000;
     public float braveryProb = 0.05f;
 
+    public float soldierProb = 0.5f;
+    public float lightTankProb = 0.2f;
+    public float heavyTankProb = 0.8f;
+
     [Header("Dont Touch")]
     [Header("Command")]
     public Vector3 moveToTargetPos;
     public EnemyAllyInfluence moveToTargetPosInfluence;
+
+    public Type nextUnitBeCreated;
 
     [NonSerialized] public GamePlayer self;
     public SerializableDictionary<Vector3, EnemyAllyInfluence> zoneInfluences = new SerializableDictionary<Vector3, EnemyAllyInfluence>();
