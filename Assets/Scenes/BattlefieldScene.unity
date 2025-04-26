@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: f6bab32214794ea43b5608bb62f4b1e9, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 68df4f9370c21234aa13b81d0095e471, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -378,6 +378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   selectedSquads: []
+  uniquelySelectedSquad: {fileID: 0}
 --- !u!114 &798244283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,6 +393,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerName: player
   isAlly: 1
+  country: 1
   commanderConfig:
     maintainResource:
       oil: 1000
@@ -403,6 +405,9 @@ MonoBehaviour:
     selectedSquadSumInfluence: 2000
     fearInfluence: 2000
     braveryProb: 0.01
+    soldierProb: 0.5
+    lightTankProb: 0.2
+    heavyTankProb: 0.8
     moveToTargetPos: {x: 0, y: 0, z: 0}
     moveToTargetPosInfluence:
       name: 
@@ -1270,6 +1275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerName: enemy
   isAlly: 0
+  country: 1
   commanderConfig:
     maintainResource:
       oil: 1000
@@ -1281,6 +1287,9 @@ MonoBehaviour:
     selectedSquadSumInfluence: 2000
     fearInfluence: 2000
     braveryProb: 0.01
+    soldierProb: 0.5
+    lightTankProb: 0.2
+    heavyTankProb: 0.8
     moveToTargetPos: {x: 0, y: 0, z: 0}
     moveToTargetPosInfluence:
       name: 
@@ -1476,6 +1485,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSquads: 30
+  eachPlayerEarningsPerTime:
+    oil: 0
+    iron: 0
+    food: 0
 --- !u!4 &1932241750
 Transform:
   m_ObjectHideFlags: 0

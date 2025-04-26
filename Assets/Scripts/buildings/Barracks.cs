@@ -5,7 +5,8 @@ using UnityEngine;
 public class Barracks: GameBuilding{
     void Start(){
         spawnOptions = new List<SpawnOption>(){
-            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/Infantry.asset"),
+            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/Infantry.asset"),
+            // AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/Infantry.asset"),
         };
     }
 

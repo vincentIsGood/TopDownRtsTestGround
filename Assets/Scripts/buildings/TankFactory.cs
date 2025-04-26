@@ -5,8 +5,10 @@ using UnityEngine;
 public class TankFactory: GameBuilding{
     void Start(){
         spawnOptions = new List<SpawnOption>(){
-            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/LightTankSquad.asset"),
-            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/HeavyTankSquad.asset"),
+            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/TankSquad.asset"),
+            AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/TankSquad.asset"),
+            // AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/LightTankSquad.asset"),
+            // AssetDatabase.LoadAssetAtPath<SpawnOption>($"Assets/Config/Spawn/{owner.country}/HeavyTankSquad.asset"),
         };
     }
 

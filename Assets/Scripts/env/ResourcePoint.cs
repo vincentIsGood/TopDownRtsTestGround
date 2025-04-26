@@ -24,13 +24,13 @@ public class ResourcePoint: MonoBehaviour{
     private Dictionary<GamePlayer, int> playersInside = new Dictionary<GamePlayer, int>();
     private HashSet<Squad> squadsInside = new HashSet<Squad>();
 
-    private SpriteRenderer spriteRenderer;
+    // private SpriteRenderer spriteRenderer;
 
     void Awake(){
         playersMask = LayerMask.GetMask("Ally", "Enemy");
         resGenerationCounter = new IntervalActionUtils(giveResourceToCapturer, 10);
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        // spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update(){
@@ -53,10 +53,17 @@ public class ResourcePoint: MonoBehaviour{
             startCapTimeSec = -1;
         }
         
-        colorChange();
+        // colorChange();
     }
 
-    void colorChange(){
+#if UNITY_EDITOR
+    void OnDrawGizmos(){
+        Handles.color = colorChange();
+        Handles.DrawWireDisc(transform.position, transform.forward, this.captureRadius);
+    }
+#endif
+
+    Color colorChange(){
         Color currentColor = getCurrentColor();
         if(startCapTimeSec != -1){
             Color newColor = Color.black;
@@ -66,10 +73,11 @@ public class ResourcePoint: MonoBehaviour{
                 newColor = capturing.isAlly? Color.blue : Color.red;
             }
             Color finalColor = Color.Lerp(currentColor, newColor, (Time.time - startCapTimeSec) / captureTimeSec);
-            // currentColor = finalColor;
             finalColor.a = 0.5f;
-            spriteRenderer.color = finalColor;
+            // spriteRenderer.color = finalColor;
+            return finalColor;
         }
+        return currentColor;
     }
     private Color getCurrentColor(){
         Color resultColor = Color.black;
